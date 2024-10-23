@@ -16,16 +16,16 @@
   #Set your tine zone.
   time.timeZone = "Europe/Moscow";
 
-  # Define a user account. Don't forget to set a password with passud . users.users.tahara = {
+  # Define a user account. Don't forget to set a password with passud. 
   users.users.tahara = {
     isNormalUser = true;
     home = "/home/tahara";
     description = "Tahara";
-    shell = pkgs.bash; 
-    extraGroups = [ "wheel" "networkmanager"];
-    initialPassuord = "1";
+    shell = pkgs.bash;
+    extraGroups = [ "wheel" "networkmanager" ];
+    initialPassword = "1";  # Простой незашифрованный пароль
   };
 
-  systen.stateVersion = "24.05";
+  system.stateVersion = "24.05";
 
 }
