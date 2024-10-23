@@ -1,8 +1,8 @@
-{config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 
 {
   imports =
-    [ # Include the results of the harduare scan.
+    [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -13,10 +13,10 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  #Set your tine zone.
+  # Set your time zone.
   time.timeZone = "Europe/Moscow";
 
-  # Define a user account. Don't forget to set a password with passud. 
+  # Define a user account. Don't forget to set a password with passwd. 
   users.users.tahara = {
     isNormalUser = true;
     home = "/home/tahara";
@@ -27,5 +27,4 @@
   };
 
   system.stateVersion = "24.05";
-
 }
