@@ -9,7 +9,8 @@
   # Use the GRUB 2 boot loader.
   boot.loader.grub.version = 2;
   boot.loader.grub.efiSupport = true;
-  boot.loader.grub.devices = [ "/dev/sda" ];
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.configurationLimit = 10;
 
   # Swap для подкачки
   swapDevices = [ { device = "/dev/sda2"; } ];
