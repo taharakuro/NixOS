@@ -12,16 +12,14 @@
 
   # Install Hyprland
   environment.systemPackages = with pkgs; [
-    hyprland
-    wayland
     kitty
     firefox
   ];
 
+  programs.hyprland.enable = true; # enable Hyprlan
   # Включение службы для запуска Hyprland
   services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true; # LightDM
-  services.xserver.windowManager.hyprland.enable = true;
+  services.xserver.displayManager.gdm.enable = true; # LightDM
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
