@@ -7,25 +7,9 @@
     ];
 
   # Use the GRUB 2 boot loader.
-  boot.loader.grub.version = 2;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.configurationLimit = 10;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-  # Swap для подкачки
-  swapDevices = [ { device = "/dev/sda2"; } ];
-
-  # Btrfs root
-  fileSystems."/" = {
-    device = "/dev/sda3";
-    fsType = "btrfs";
-  };
-
-  # EFI boot
-  fileSystems."/boot" = {
-    device = "/dev/sda1";
-    fsType = "vfat";
-  };
 
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
