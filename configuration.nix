@@ -11,6 +11,21 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.devices = [ "/dev/sda" ];
 
+  # Swap для подкачки
+  swapDevices = [ { device = "/dev/sda2"; } ];
+
+  # Btrfs root
+  fileSystems."/" = {
+    device = "/dev/sda3";
+    fsType = "btrfs";
+  };
+
+  # EFI boot
+  fileSystems."/boot" = {
+    device = "/dev/sda1";
+    fsType = "vfat";
+  };
+
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
