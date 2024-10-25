@@ -17,12 +17,12 @@
     firefox
   ];
 
-  # Enable Hyprland
-  programs.hyprland.enable = true;
-
-  # Enable X server and display manager (GDM)
+  # Enable Hyprland (and add GDM for display management)
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.enable = true;  # Включаем GDM
+  services.xserver.displayManager.autoLogin.enable = true;
+  services.xserver.displayManager.autoLogin.user = "tahara"; # Для автоматического входа
+  services.xserver.desktopManager.hyprland.enable = true;
 
   # Enable NetworkManager for networking
   networking.networkmanager.enable = true;
