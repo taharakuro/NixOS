@@ -15,14 +15,52 @@
   environment.systemPackages = with pkgs; [
     kitty
     firefox
+    btop
+    bun
+    pipewire
+    libgtop
+    bluez
+    bluez-tools
+    grimblast
+    gpu-screen-recorder
+    hyprpicker
+    btop
+    matugen
+    wl-clipboard
+    swww
+    dart-sass
+    brightnessctl
+    gnome.gnome-bluetooth
+    python3
+    gpustat
+    pywal
+    power-profiles-daemon
+    gnome.nautilus
+    nwg-look
   ];
 
+  fonts.packages = with pkgs; [
+    (nerdfonts.override { fonts = [ "JetBrainsMono"  ]; })
+  ];
+
+  hardware.bluetooth.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    audio.enable = true;
+    pulse.enable = true;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+    jack.enable = true;
+  };
+
   # Enable Hyprland (and add GDM for display management)
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;  # Включаем GDM
-  services.xserver.displayManager.autoLogin.enable = true;
-  services.xserver.displayManager.autoLogin.user = "tahara"; # Для автоматического входа
-  services.xserver.desktopManager.hyprland.enable = true;
+  services.xserver = {
+    enable = true;
+    displayManager.gdm.enable = true;  # Включаем GDM
+  };
 
   # Enable NetworkManager for networking
   networking.networkmanager.enable = true;
@@ -38,7 +76,7 @@
     isNormalUser = true;
     home = "/home/tahara";
     description = "Tahara";
-    shell = pkgs.bash;
+    shell = pkgs.zsh;
     extraGroups = [ "wheel" "networkmanager" ];
     initialPassword = "1"; # Don't forget to change this password later!
   };
