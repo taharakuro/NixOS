@@ -37,6 +37,8 @@
     power-profiles-daemon
     gnome.nautilus
     nwg-look
+    fwupd
+    fwupd-efi
   ];
 
   fonts.packages = with pkgs; [
