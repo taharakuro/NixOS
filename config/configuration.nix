@@ -1,7 +1,13 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  # hardware-configuration.nix появляется только после установки на
+  # конкретное железо (nixos-generate-config на целевой машине). Условный
+  # импорт нужен, чтобы disko мог вычислить disko.devices из этого же
+  # флейка ещё ДО того, как этот файл закоммичен в репозиторий — иначе
+  # вычисление всей конфигурации падает с "file not found" на самом первом
+  # шаге (партиционировании), когда файла ещё физически не существует.
+  imports = lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
 
   system.stateVersion = "26.05";
 

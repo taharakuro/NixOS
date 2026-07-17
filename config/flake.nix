@@ -1,6 +1,16 @@
 {
   description = "NixOS configuration with Niri and Noctalia";
 
+  # Кэш niri.cachix.org сам включается модулем niri-flake для обычных
+  # nixos-rebuild, но НЕ успевает подействовать на самой первой сборке при
+  # nixos-install (система ещё не переключена, чтобы применить nix.settings).
+  # Этот блок читает сама команда `nix`, поэтому кэш работает и на установке —
+  # но nix спросит подтверждение (или нужен флаг --accept-flake-config).
+  nixConfig = {
+    extra-substituters = [ "https://niri.cachix.org" ];
+    extra-trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -48,8 +58,11 @@
             # чтобы activation не падал, если в $HOME уже лежат обычные
             # (не symlink) дотфайлы, конфликтующие с управляемыми HM
             backupFileExtension = "hm-backup";
+            # niri.nixosModules.niri сам подключает свой home-manager
+            # модуль каждому HM-пользователю, когда видит home-manager как
+            # модуль NixOS — явный sharedModules тут не нужен и вызывал
+            # двойное объявление programs.niri.finalConfig.
             extraSpecialArgs = { inherit inputs; };
-            sharedModules = [ niri.homeModules.niri ];
             users.tahara = import ./home.nix;
           };
         }
