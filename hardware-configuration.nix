@@ -2,7 +2,7 @@
 # and may be overwritten by future invocations.
 Please make changes
 # to /etc/nixos/configuration.nix instead.
-{ config, lib, pkgs, modulesPath, ... } :
+{ config, lib, pkgs, modulesPath, ... }:
 
 {
   imports = [ ];
@@ -11,6 +11,6 @@ Please make changes
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
-  
+
   nixpkgs.hostPlatform lib.mkDefault "x86_64-linux";
 }
