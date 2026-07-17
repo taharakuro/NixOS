@@ -6,10 +6,10 @@
 {
   imports = [ ];
 
-  boot.initrd.availableKernel Modules = [ "ata_piix" "mptspi" "uhci_hcd" "ahci" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [ "ata_piix" "mptspi" "uhci_hcd" "ahci" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
-  nixpkgs.hostPlatform lib.mkDefault "x86_64-linux";
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
