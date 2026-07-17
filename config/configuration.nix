@@ -5,6 +5,16 @@
 
   system.stateVersion = "26.05";
 
+  # Steam тянет несвободные пакеты (steam, steam-run и т.д.). Разрешаем
+  # точечно, а не через allowUnfree = true, чтобы не открывать unfree
+  # для вообще всего остального.
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "steam"
+    "steam-original"
+    "steam-unwrapped"
+    "steam-run"
+  ];
+
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
@@ -36,7 +46,10 @@
   };
 
   hardware = {
-    graphics.enable = true;
+    graphics = {
+      enable = true;
+      enable32Bit = true; # нужно Steam / Proton для 32-битных игр
+    };
     enableRedistributableFirmware = true;
     bluetooth.enable = true;
   };
@@ -73,10 +86,13 @@
     steam.enable = true;
   };
 
+  # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
+  # Screenshot/ScreenCast в xdg-desktop-portal-gnome, а не в -wlr — так что
+  # именно gnome-портал и нужно ставить, чтобы шаринг экрана/скриншоты
+  # реально работали. -gtk оставляем для FileChooser и обычных GTK-приложений.
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
   };
 
   users.users.tahara = {

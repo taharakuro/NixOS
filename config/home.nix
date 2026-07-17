@@ -20,7 +20,6 @@
       nautilus
       pavucontrol
       networkmanagerapplet
-      fastfetch
     ];
   };
 
@@ -28,7 +27,7 @@
 
   programs = {
     home-manager.enable = true;
-    noctalia-shell = {
+    noctalia = {
       enable = true;
       settings = {
         bar.position = "top";
