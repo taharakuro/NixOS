@@ -113,7 +113,6 @@
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       noto-fonts
-      noto-fonts-cjk
       font-awesome
     ];
     fontconfig.enable = true;
