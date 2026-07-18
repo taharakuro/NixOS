@@ -28,16 +28,9 @@
       url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Даёт NixOS- и home-manager-модули для niri (programs.niri.settings,
-    # используемый в home.nix, — это опция из этого флейка, а не из nixpkgs).
-    niri = {
-      url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { nixpkgs, home-manager, disko, niri, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
@@ -47,7 +40,6 @@
 
       modules = [
         disko.nixosModules.disko
-        niri.nixosModules.niri
         ./disko.nix
         ./configuration.nix
         home-manager.nixosModules.home-manager

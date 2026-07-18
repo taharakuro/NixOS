@@ -87,7 +87,7 @@
   security.polkit.enable = true;
   programs = {
     dconf.enable = true;
-    niri.enable = false;
+    niri.enable = true;
     fish.enable = true;
     steam.enable = true;
   };
@@ -129,6 +129,5 @@
     tree
     ripgrep
     fd
-    niri
   ];
 }
