@@ -30,6 +30,14 @@
     ];
   };
 
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
+
   imports = [ inputs.noctalia.homeModules.default ];
 
   programs = {
