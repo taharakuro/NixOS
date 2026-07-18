@@ -123,5 +123,6 @@
     ripgrep
     fd
     telegram-desktop
+    xwayland-satellite
   ];
 }
