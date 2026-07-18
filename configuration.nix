@@ -26,6 +26,11 @@
     };
   };
 
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
