@@ -11,13 +11,13 @@
 
   system.stateVersion = "26.05";
 
+  nixpkgs.config.allowUnfree = true;
+
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
     };
-
-    allowUnfree = true;
 
     gc = {
       automatic = true;
