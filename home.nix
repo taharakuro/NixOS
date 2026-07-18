@@ -56,16 +56,6 @@
     };
   };
 
-  # Enable GTK configuration
-  gtk = {
-    enable = true;
-    
-    # Set your icon theme
-    iconTheme = {
-      name = "Papirus-Dark"; # Ensure this matches the exact folder name inside the package
-      package = pkgs.papirus-icon-theme;
-    };
-
   services.swayidle = {
     enable = true;
     timeouts = [
