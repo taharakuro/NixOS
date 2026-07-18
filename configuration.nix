@@ -110,6 +110,8 @@
     fontconfig.enable = true;
   };
 
+  services.xserver.enable = true;
+
   environment.systemPackages = with pkgs; [
     vim
     git
