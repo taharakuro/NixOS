@@ -87,7 +87,7 @@
   security.polkit.enable = true;
   programs = {
     dconf.enable = true;
-    niri.enable = true;
+    niri.enable = false;
     fish.enable = true;
     steam.enable = true;
   };
@@ -118,8 +118,6 @@
     fontconfig.enable = true;
   };
 
-  programs.niri.enable = true;
-
   environment.systemPackages = with pkgs; [
     vim
     git
@@ -131,5 +129,6 @@
     tree
     ripgrep
     fd
+    niri
   ];
 }
