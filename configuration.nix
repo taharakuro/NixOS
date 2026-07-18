@@ -19,6 +19,7 @@
     "steam-original"
     "steam-unwrapped"
     "steam-run"
+    "discord-ptb"
   ];
 
   nix = {
@@ -130,6 +131,5 @@
     ripgrep
     fd
     telegram-desktop
-    discord-ptb
   ];
 }
