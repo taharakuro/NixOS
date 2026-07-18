@@ -82,6 +82,7 @@
     niri.enable = true;
     fish.enable = true;
     steam.enable = true;
+    xwayland.enable = true;
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
@@ -109,8 +110,6 @@
     ];
     fontconfig.enable = true;
   };
-
-  services.xserver.enable = true;
 
   environment.systemPackages = with pkgs; [
     vim
