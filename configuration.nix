@@ -19,7 +19,7 @@
     "steam-original"
     "steam-unwrapped"
     "steam-run"
-    "discord-ptb"
+    "discord"
   ];
 
   nix = {
