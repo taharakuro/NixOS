@@ -21,6 +21,14 @@
     "steam-run"
   ];
 
+  gtk = {
+    enable = true;
+    iconTheme = {
+      package = pkgs.papirus-icon-theme;
+      name = "Papirus";
+    };
+  };
+
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
