@@ -129,5 +129,6 @@
     tree
     ripgrep
     fd
+    niri
   ];
 }
