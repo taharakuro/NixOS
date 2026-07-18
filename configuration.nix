@@ -17,6 +17,8 @@
       auto-optimise-store = true;
     };
 
+    nixpkgs.config.allowUnfree = true;
+
     gc = {
       automatic = true;
       dates = "weekly";
