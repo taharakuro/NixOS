@@ -19,6 +19,8 @@
     "steam-original"
     "steam-unwrapped"
     "steam-run"
+    "discord"
+    "vmware-workstation"
   ];
 
   nix = {
@@ -129,8 +131,6 @@
     tree
     ripgrep
     fd
-    discord
     telegram-desktop
-    vmware-workstation
   ];
 }
