@@ -11,17 +11,6 @@
 
   system.stateVersion = "26.05";
 
-  # Steam тянет несвободные пакеты (steam, steam-run и т.д.). Разрешаем
-  # точечно, а не через allowUnfree = true, чтобы не открывать unfree
-  # для вообще всего остального.
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "steam"
-    "steam-original"
-    "steam-unwrapped"
-    "steam-run"
-    "discord"
-  ];
-
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
@@ -91,6 +80,12 @@
     niri.enable = true;
     fish.enable = true;
     steam.enable = true;
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
