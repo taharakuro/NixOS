@@ -7,8 +7,7 @@
   # флейка ещё ДО того, как этот файл закоммичен в репозиторий — иначе
   # вычисление всей конфигурации падает с "file not found" на самом первом
   # шаге (партиционировании), когда файла ещё физически не существует.
-  imports = [ ./tor.nix ]
-    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
+  imports = lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
 
   system.stateVersion = "26.05";
 
