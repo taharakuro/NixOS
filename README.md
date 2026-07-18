@@ -41,7 +41,7 @@
    ```bash
    sudo nix --extra-experimental-features "nix-command flakes" \
      run github:nix-community/disko -- \
-     --mode disko --flake "github:<ВАШ_ЮЗЕР>/<ВАШ_РЕПО>#nixos"
+     --mode disko --flake "github:taharakuro/NixOS#nixos"
    ```
 
 4. Сгенерировать `hardware-configuration.nix` **с флагом `--no-filesystems`**
@@ -68,7 +68,7 @@
 
    ```bash
    sudo nixos-install --extra-experimental-features "nix-command flakes" \
-     --flake "github:<ВАШ_ЮЗЕР>/<ВАШ_РЕПО>#nixos"
+     --flake "github:taharakuro/NixOS#nixos"
    ```
 
    `nixos-install` задаст пароль root в конце — на этом установка закончена.
