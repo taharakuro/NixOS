@@ -129,5 +129,8 @@
     tree
     ripgrep
     fd
+    discord
+    telegram-desktop
+    vmware-workstation
   ];
 }
