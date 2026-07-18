@@ -84,12 +84,6 @@
     steam.enable = true;
   };
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Открытие портов для Steam Remote Play
-    dedicatedServer.openFirewall = true; # Открытие портов для выделенных серверов
-  };
-
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
   # Screenshot/ScreenCast в xdg-desktop-portal-gnome, а не в -wlr — так что
   # именно gnome-портал и нужно ставить, чтобы шаринг экрана/скриншоты
