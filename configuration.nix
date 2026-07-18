@@ -118,6 +118,8 @@
     fontconfig.enable = true;
   };
 
+  programs.niri.enable = true;
+
   environment.systemPackages = with pkgs; [
     vim
     git
@@ -129,6 +131,5 @@
     tree
     ripgrep
     fd
-    niri
   ];
 }
