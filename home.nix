@@ -34,13 +34,6 @@
         clock.format = "HH:mm";
       };
     };
-    niri.settings = {
-      spawn-at-startup = [ { command = [ "noctalia-shell" ]; } ];
-      binds = {
-        "Mod+Return".action.spawn = [ "kitty" ];
-        "Mod+D".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
-      };
-    };
     kitty = {
       enable = true;
       settings = {
