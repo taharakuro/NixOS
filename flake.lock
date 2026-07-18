@@ -41,6 +41,22 @@
         "type": "github"
       }
     },
+    "libnbtplusplus": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772016279,
+        "narHash": "sha256-7itkptyjoRcXfGLwg1/jxajetZ3a4mDc66+w4X6yW8s=",
+        "owner": "PrismLauncher",
+        "repo": "libnbtplusplus",
+        "rev": "687e43031df0dc641984b4256bcca50d5b3f7de3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "PrismLauncher",
+        "repo": "libnbtplusplus",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1784280462,
@@ -64,11 +80,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784388493,
-        "narHash": "sha256-8QQFL3Q4JUWr+tUlFBu67uNeFaJbBDQWCu6w+sUQ5sQ=",
+        "lastModified": 1784390676,
+        "narHash": "sha256-d6YSbdMQM3A3+X0BU7NFX506U/CaRgyh2Jwe9WhiBg0=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "708d5a4d800a45509101da5aa97b585d4f64ebfa",
+        "rev": "5a20c9cf0ecc398c9391aa52ac075a0401f720c9",
         "type": "github"
       },
       "original": {
@@ -77,12 +93,34 @@
         "type": "github"
       }
     },
+    "prismlauncher": {
+      "inputs": {
+        "libnbtplusplus": "libnbtplusplus",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782480219,
+        "narHash": "sha256-xzmiFJfZ+glNrVcUVzKJgxC0jA1RHPaBDEh0Fxsu/jQ=",
+        "owner": "PrismLauncher",
+        "repo": "PrismLauncher",
+        "rev": "d2fa7cf7f7aa8fa5e3d4f5f7b474621c732cd525",
+        "type": "github"
+      },
+      "original": {
+        "owner": "PrismLauncher",
+        "repo": "PrismLauncher",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "noctalia": "noctalia"
+        "noctalia": "noctalia",
+        "prismlauncher": "prismlauncher"
       }
     }
   },
