@@ -86,8 +86,8 @@
 
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
+    remotePlay.openFirewall = true; # Открытие портов для Steam Remote Play
+    dedicatedServer.openFirewall = true; # Открытие портов для выделенных серверов
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
