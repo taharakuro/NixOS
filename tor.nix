@@ -8,7 +8,7 @@
       enable = true;
 
       # Отключаем автогенерацию SOCKSPort
-      socksListenAddress = "0";
+      socksListenAddress = 0;
 
       # DNSPort будет создан автоматически (127.0.0.1:9053)
       dns.enable = true;
