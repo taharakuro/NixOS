@@ -138,5 +138,6 @@
     mpvpaper
     vlc
     ffmpeg
+    eog
   ];
 }
