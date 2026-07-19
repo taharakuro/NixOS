@@ -16,6 +16,8 @@
       NIXOS_OZONE_WL = "1";
       MOZ_ENABLE_WAYLAND = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
+      QT_QPA_PLATFORMTHEME = "gtk3"; # Sync with GTK
+      QT_STYLE_OVERRIDE = "adwaita-dark";
     };
     packages = with pkgs; [
       fuzzel
@@ -37,7 +39,14 @@
       };
     };
   };
-
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk"; # or "gnome" or "qtct"
+    style = {
+      name = "adwaita-dark";   # Choose "Adwaita-Dark" or "Breeze-Dark"
+      package = pkgs.adwaita-qt;
+    };
+  };
   gtk = {
     # Example: Adwaita-dark, or replace with pkgs.orchis-theme, pkgs.catppuccin-gtk, etc.
     theme = {
