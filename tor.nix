@@ -4,78 +4,73 @@
   services.tor = {
     enable = true;
 
+    # Для клиента GeoIP не требуется
+    enableGeoIP = false;
+
     client = {
       enable = true;
 
-      # DNSPort 127.0.0.1:9053
+      # Создает DNSPort = 127.0.0.1:9053
       dns.enable = true;
     };
 
+    # Позволяет использовать torsocks
+    torsocks.enable = true;
+
     settings = {
-      ##
-      ## Transparent proxy
-      ##
+      #
+      # SOCKS и DNS
+      #
+      # SOCKSPort НЕ задаем вручную.
+      # Его автоматически создает client.enable.
+      #
 
       VirtualAddrNetwork = "10.192.0.0/10";
       AutomapHostsOnResolve = true;
-      AutomapHostsSuffixes = ".exit,.onion";
+      AutomapHostsSuffixes = ".onion,.exit";
 
-      ##
-      ## SOCKS
-      ##
+      #
+      # ControlPort
+      #
+      ControlPort = 9051;
+      CookieAuthentication = true;
 
-      SOCKSPort = [
-        {
-          addr = "127.0.0.1";
-          port = 9050;
-
-          IsolateClientAddr = true;
-          IsolateSOCKSAuth = true;
-          IsolateClientProtocol = true;
-          IsolateDestAddr = true;
-          IsolateDestPort = true;
-        }
-      ];
-
-      ##
-      ## Transparent Proxy
-      ##
-
-      TransPort = [
-        {
-          addr = "127.0.0.1";
-          port = 9040;
-
-          IsolateClientAddr = true;
-          IsolateSOCKSAuth = true;
-          IsolateClientProtocol = true;
-          IsolateDestAddr = true;
-          IsolateDestPort = true;
-        }
-      ];
-
-      ##
-      ## Security
-      ##
-
-      SafeSocks = true;
+      #
+      # Безопасность
+      #
+      SafeLogging = true;
+      AvoidDiskWrites = true;
       ClientRejectInternalAddresses = true;
+      AllowNonRFC953Hostnames = false;
 
-      ##
-      ## Circuit behaviour
-      ##
+      #
+      # Изоляция цепочек
+      #
+      UseEntryGuards = true;
+      EnforceDistinctSubnets = true;
 
-      NewCircuitPeriod = 40;
-      MaxCircuitDirtiness = 600;
+      #
+      # Проверка SOCKS
+      #
+      TestSocks = true;
 
-      ##
-      ## Bridges
-      ##
+      #
+      # Аппаратное ускорение
+      #
+      HardwareAccel = true;
 
+      #
+      # Предупреждать о незашифрованных сервисах
+      #
+      WarnPlaintextPorts = "21,23,25,80,109,110,119,143";
+
+      #
+      # Bridges
+      #
       UseBridges = true;
 
       ClientTransportPlugin =
-        "obfs4 exec ${pkgs.lyrebird}/bin/lyrebird";
+        "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
 
       Bridge = [
         "obfs4 94.156.153.217:31337 AF9EABB157AE185E3D0F030D6F21C2044A794976 cert=Gg+YPaGTlB30p7x45igqEJQ4Af/8HqgbIzwJ1GBzqto1xSDS/k5H83mttmUh0Zob+vrQWw iat-mode=0"
