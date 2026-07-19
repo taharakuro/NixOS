@@ -27,7 +27,10 @@
 
       VirtualAddrNetwork = "10.192.0.0/10";
       AutomapHostsOnResolve = true;
-      AutomapHostsSuffixes = ".onion,.exit";
+      AutomapHostsSuffixes = [
+        ".onion"
+        ".exit"
+      ];
 
       #
       # ControlPort
@@ -62,7 +65,16 @@
       #
       # Предупреждать о незашифрованных сервисах
       #
-      WarnPlaintextPorts = "21,23,25,80,109,110,119,143";
+      WarnPlaintextPorts = [
+        21
+        23
+        25
+        80
+        109
+        110
+        119
+        143
+      ];
 
       #
       # Bridges
