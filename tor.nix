@@ -5,12 +5,14 @@
     enable = true;
 
     client = {
+      # Включаем клиентский режим (SOCKS/DNS и пр.)
       enable = true;
 
-      # Отключаем автогенерацию SOCKSPort
-      socksListenAddress = 0;
-
-      # DNSPort будет создан автоматически (127.0.0.1:9053)
+      # ВАЖНО: socksListenAddress убираем совсем.
+      # Модуль Tor сам не будет вмешиваться в наш settings.SOCKSPort,
+      # если мы его явно задаём.
+      #
+      # dns.enable оставляем — он создаёт DNSPort = 127.0.0.1:9053.
       dns.enable = true;
     };
 
@@ -19,27 +21,34 @@
       AutomapHostsOnResolve = true;
       AutomapHostsSuffixes = ".exit,.onion";
 
-      # SOCKS
-      SOCKSPort = [{
-        addr = "127.0.0.1";
-        port = 9050;
-        IsolateClientAddr = true;
-        IsolateSOCKSAuth = true;
-        IsolateClientProtocol = true;
-        IsolateDestPort = true;
-        IsolateDestAddr = true;
-      }];
+      # Явно задаём SOCKSPort как список сабмодулей — это полностью
+      # соответствует torrc и типам NixOS-модуля (freeform).
+      SOCKSPort = [
+        {
+          addr = "127.0.0.1";
+          port = 9050;
+          IsolateClientAddr = true;
+          IsolateSOCKSAuth = true;
+          IsolateClientProtocol = true;
+          IsolateDestPort = true;
+          IsolateDestAddr = true;
+        }
+      ];
 
-      # Transparent proxy
-      TransPort = [{
-        addr = "127.0.0.1";
-        port = 9040;
-        IsolateClientAddr = true;
-        IsolateSOCKSAuth = true;
-        IsolateClientProtocol = true;
-        IsolateDestPort = true;
-        IsolateDestAddr = true;
-      }];
+      TransPort = [
+        {
+          addr = "127.0.0.1";
+          port = 9040;
+          IsolateClientAddr = true;
+          IsolateSOCKSAuth = true;
+          IsolateClientProtocol = true;
+          IsolateDestPort = true;
+          IsolateDestAddr = true;
+        }
+      ];
+
+      # DNSPort руками не трогаем — его создаёт client.dns.enable = true
+      # на 127.0.0.1:9053, что соответствует поведению модуля.
 
       ControlPort = 9051;
       HashedControlPassword =
@@ -50,15 +59,12 @@
       AllowNonRFC953Hostnames = false;
       WarnPlaintextPorts = "23,109,110,143,80";
       ClientRejectInternalAddresses = true;
-
-      # Улучшенная политика цепей
       NewCircuitPeriod = 40;
       MaxCircuitDirtiness = 600;
       MaxClientCircuitsPending = 48;
       UseEntryGuards = true;
       EnforceDistinctSubnets = true;
 
-      # Bridges
       UseBridges = true;
       ClientTransportPlugin =
         "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
