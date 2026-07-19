@@ -56,7 +56,7 @@
     gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     enable = true;
     iconTheme = {
-      name = "Papirus-Dark";
+      name = "Papirus-Light";
       package = pkgs.papirus-icon-theme;
     };
   };
