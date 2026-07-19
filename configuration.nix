@@ -58,12 +58,6 @@
 
   zramSwap.enable = true;
 
-  systemd.services.nix-daemon.environment = {
-    # Прокси для HTTP и HTTPS трафика через SOCKS5
-    http_proxy = "socks5h://127.0.0.1:9050";
-    https_proxy = "socks5h://127.0.0.1:9050";
-  };
-
   services.pipewire = {
     enable = true;
     alsa.enable = true;
