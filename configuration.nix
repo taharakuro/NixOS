@@ -54,6 +54,7 @@
   };
   services.xserver.videoDrivers = [ "amdgpu" ];
   services.fstrim.enable = true;
+  services.gvfs.enable = true;
 
   zramSwap.enable = true;
 
@@ -125,5 +126,10 @@
     fd
     telegram-desktop
     xwayland-satellite
+    discord
+    vmware-workstation
+    mpvpaper
+    vlc
+    ffmpeg
   ];
 }

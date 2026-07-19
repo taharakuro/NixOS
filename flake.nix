@@ -47,6 +47,10 @@
         disko.nixosModules.disko
         ./disko.nix
         ./configuration.nix
+	(
+	  { pkgs, ... }:
+	  { environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ]; }
+	)
         home-manager.nixosModules.home-manager
         {
           home-manager = {
