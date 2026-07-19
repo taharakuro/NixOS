@@ -95,6 +95,7 @@
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
   };
+  xdg.icons.enable = true;
 
   users.users.tahara = {
     isNormalUser = true;
