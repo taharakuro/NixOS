@@ -16,6 +16,10 @@
 
   nix = {
     settings = {
+      substituters = [
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+        "https://cache.nixos.org/"
+      ];
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
     };
@@ -105,7 +109,7 @@
   virtualisation = {
     docker.enable = true;
     vmware.host.enable = true;
-  }
+  };
 
   fonts = {
     packages = with pkgs; [
