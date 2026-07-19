@@ -29,8 +29,28 @@
       AutomapHostsOnResolve = true;
       AutomapHostsSuffixes = ".exit,.onion";
 
-      SOCKSPort = "127.0.0.1:9050 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestPort IsolateDestAddr";
-      TransPort = "127.0.0.1:9040 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestPort IsolateDestAddr";
+      SOCKSPort = [
+        {
+          addr = "127.0.0.1";
+          port = 9050;
+          IsolateClientAddr = true;
+          IsolateSOCKSAuth = true;
+          IsolateClientProtocol = true;
+          IsolateDestPort = true;
+          IsolateDestAddr = true;
+        }
+      ];
+      TransPort = [
+        {
+          addr = "127.0.0.1";
+          port = 9040;
+          IsolateClientAddr = true;
+          IsolateSOCKSAuth = true;
+          IsolateClientProtocol = true;
+          IsolateDestPort = true;
+          IsolateDestAddr = true;
+        }
+      ];
       # DNSPort сюда специально не пишем: тип этой опции — не строка, а
       # число/сабмодуль { addr; port; } (или список таких), обычная
       # строка "127.0.0.1:9053" не проходит проверку типов. При этом
