@@ -141,5 +141,6 @@
     vlc
     ffmpeg
     eog
+    spotify
   ];
 }
