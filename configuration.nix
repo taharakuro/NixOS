@@ -102,7 +102,10 @@
     shell = pkgs.fish;
   };
 
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    docker.enable = true;
+    vmware.host.enable = true;
+  }
 
   fonts = {
     packages = with pkgs; [
