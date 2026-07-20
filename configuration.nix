@@ -143,5 +143,7 @@
     gedit
     obsidian
     jdk21
+    wineWow64Packages.waylandFull
+    winetricks
   ];
 }
