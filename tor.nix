@@ -3,7 +3,6 @@
 {
   services.privoxy = {
     enable = true;
-    enableTor = true; # Automatically forwards traffic to local Tor instance (127.0.0.1:9050)
     
     settings = {
       "listen-address" = "127.0.0.1:8118";
