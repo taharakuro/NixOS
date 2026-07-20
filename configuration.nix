@@ -18,6 +18,19 @@
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
+
+      # cache.nixos.org стабильно недоступен — берём с зеркал. Пакеты
+      # там те же самые, подписаны тем же ключом cache.nixos.org-1,
+      # который уже встроен в Nix по умолчанию — новых ключей доверия
+      # добавлять не нужно. Сам cache.nixos.org оставляем последним
+      # в списке на случай, если блокировка снимется.
+      substituters = [
+        "https://mirror.sjtu.edu.cn/nix-channels/store"
+        "https://mirrors.ustc.edu.cn/nix-channels/store"
+        "https://cache.nixos.org"
+      ];
+      # не ждать по 15 секунд на каждую мёртвую попытку до зеркал
+      connect-timeout = 5;
     };
 
     gc = {
