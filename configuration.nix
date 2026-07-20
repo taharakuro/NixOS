@@ -33,10 +33,10 @@
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
-    proxy = {
-      default = "http://127.0.0.1:8118";
-      noProxy = "127.0.0.1,localhost,internal.domain";
-    };
+   # proxy = {
+   #   default = "http://127.0.0.1:8118";
+   #   noProxy = "127.0.0.1,localhost,internal.domain";
+   # };
   };
 
   time.timeZone = "Europe/Moscow";
