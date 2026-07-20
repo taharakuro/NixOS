@@ -1,4 +1,3 @@
-# Tor-клиент с мостами obfs4 (обход DPI-блокировок).
 { config, lib, pkgs, ... }:
 
 {
@@ -63,6 +62,23 @@
         http_proxy = "socks5h://127.0.0.1:9063";
         https_proxy = "socks5h://127.0.0.1:9063";
         all_proxy = "socks5h://127.0.0.1:9063";
+        # http_proxy/https_proxy глобальны на весь процесс nix-daemon —
+        # у Nix нет способа указать прокси для одного конкретного
+        # substituter. Поэтому вместо этого исключаем через no_proxy всё,
+        # что и так нормально работает напрямую (GitHub, зеркала, кэши
+        # niri/noctalia) — через Tor в итоге реально пойдёт только то,
+        # что осталось не в списке, то есть cache.nixos.org.
+        no_proxy = lib.concatStringsSep "," [
+          "localhost"
+          "127.0.0.1"
+          "github.com"
+          "raw.githubusercontent.com"
+          "codeload.github.com"
+          "objects.githubusercontent.com"
+          "api.github.com"
+          "niri.cachix.org"
+          "noctalia.cachix.org"
+        ];
       };
     };
   };
