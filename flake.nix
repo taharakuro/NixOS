@@ -7,8 +7,8 @@
   # Этот блок читает сама команда `nix`, поэтому кэш работает и на установке —
   # но nix спросит подтверждение (или нужен флаг --accept-flake-config).
   nixConfig = {
-    extra-substituters = [ "https://niri.cachix.org" ];
-    extra-trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
+    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
   };
 
   inputs = {
