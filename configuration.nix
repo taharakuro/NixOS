@@ -70,7 +70,6 @@
 
   services = {
     power-profiles-daemon.enable = true;
-    torProxyForNix.enable = true;
     upower.enable = true;
     greetd = {
       enable = true;
