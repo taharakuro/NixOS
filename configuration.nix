@@ -146,7 +146,6 @@
     spotify
     gedit
     obsidian
-    jdk8
-    jdk21
+    jdk17
   ];
 }
