@@ -9,6 +9,7 @@
         "listen-address" = "127.0.0.1:8118";
         "forward" = "/ .";
         "forward-socks5t" = ".cache.nixos.org 127.0.0.1:9063 .";
+        "forward-socks5t" = ".releases.nixos.org 127.0.0.1:9063 .";
       };
     };
     services.tor = {
