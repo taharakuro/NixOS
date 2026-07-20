@@ -149,5 +149,6 @@
     ffmpeg
     eog
     spotify
+    gedit
   ];
 }
