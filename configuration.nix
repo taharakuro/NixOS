@@ -27,7 +27,6 @@
       substituters = [
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         "https://mirrors.ustc.edu.cn/nix-channels/store"
-        "https://cache.nixos.org"
       ];
       # не ждать по 15 секунд на каждую мёртвую попытку до зеркал
       connect-timeout = 5;
@@ -149,6 +148,5 @@
     ffmpeg
     eog
     spotify
-    gedit
   ];
 }
