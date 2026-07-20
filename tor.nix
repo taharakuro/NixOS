@@ -1,13 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  options.services.torProxyForNix.enable = lib.mkEnableOption ''
-    маршрутизацию скачиваний nix-daemon (substituters, flake-инпуты) через
-    локальный "быстрый" SOCKS Tor (127.0.0.1:9063). По умолчанию выключено:
-    включайте только после того, как убедитесь, что services.tor реально
-    поднялся и стабильно держит цепи (systemctl status tor)
-  '';
-
   config = {
     services.tor = {
       enable = true;
@@ -53,33 +46,5 @@
     environment.systemPackages = with pkgs; [
       torsocks
     ];
-
-    systemd.services.nix-daemon = lib.mkIf config.services.torProxyForNix.enable {
-      # Мягкий порядок (After, не Requires/BindsTo): сбой tor.service не
-      # должен намертво заблокировать пересборку системы.
-      after = [ "tor.service" ];
-      environment = {
-        http_proxy = "socks5h://127.0.0.1:9063";
-        https_proxy = "socks5h://127.0.0.1:9063";
-        all_proxy = "socks5h://127.0.0.1:9063";
-        # http_proxy/https_proxy глобальны на весь процесс nix-daemon —
-        # у Nix нет способа указать прокси для одного конкретного
-        # substituter. Поэтому вместо этого исключаем через no_proxy всё,
-        # что и так нормально работает напрямую (GitHub, зеркала, кэши
-        # niri/noctalia) — через Tor в итоге реально пойдёт только то,
-        # что осталось не в списке, то есть cache.nixos.org.
-        no_proxy = lib.concatStringsSep "," [
-          "localhost"
-          "127.0.0.1"
-          "github.com"
-          "raw.githubusercontent.com"
-          "codeload.github.com"
-          "objects.githubusercontent.com"
-          "api.github.com"
-          "niri.cachix.org"
-          "noctalia.cachix.org"
-        ];
-      };
-    };
   };
 }
