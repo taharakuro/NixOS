@@ -146,5 +146,6 @@
     spotify
     gedit
     obsidian
+    jdk21
   ];
 }
