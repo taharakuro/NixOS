@@ -144,6 +144,5 @@
     eog
     spotify
     gedit
-    obsidian
   ];
 }
