@@ -39,7 +39,7 @@
   };
   qt = {
     enable = true;
-    platformTheme.name = "gtk"; # or "gnome" or "qtct"
+    platformTheme.name = "qtct"; # or "gnome" or "qtct"
     style = {
       name = "adwaita-dark";   # Choose "Adwaita-Dark" or "Breeze-Dark"
       package = pkgs.adwaita-qt;
@@ -64,6 +64,8 @@
   imports = [ inputs.noctalia.homeModules.default ];
 
   programs = {
+    qt5ct.enable = true;
+    qt6ct.enable = true;
     home-manager.enable = true;
     noctalia = {
       enable = true;
