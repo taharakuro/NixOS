@@ -11,6 +11,26 @@
         "forward-socks5t" = [ 
           ".cache.nixos.org 127.0.0.1:9063 ."
           ".releases.nixos.org 127.0.0.1:9063 ."
+          ".dis.gd 127.0.0.1:9063 ."
+          ".discord.co 127.0.0.1:9063 ."
+          ".discord.com 127.0.0.1:9063 ."
+          ".discord.design 127.0.0.1:9063 ."
+          ".discord.dev 127.0.0.1:9063 ."
+          ".discord.gg 127.0.0.1:9063 ."
+          ".discord.gift 127.0.0.1:9063 ."
+          ".discord.gifts 127.0.0.1:9063 ."
+          ".discord.media 127.0.0.1:9063 ."
+          ".discord.new 127.0.0.1:9063 ."
+          ".discord.store 127.0.0.1:9063 ."
+          ".discord.tools 127.0.0.1:9063 ."
+          ".discord-activities.com 127.0.0.1:9063 ."
+          ".discordactivities.com 127.0.0.1:9063 ."
+          ".discordapp.com 127.0.0.1:9063 ."
+          ".discordapp.net 127.0.0.1:9063 ."
+          ".discordmerch.com 127.0.0.1:9063 ."
+          ".discordpartygames.com 127.0.0.1:9063 ."
+          ".discordsays.com 127.0.0.1:9063 ."
+          ".discordstatus.com 127.0.0.1:9063 ."
         ];
       };
     };
