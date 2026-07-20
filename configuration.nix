@@ -119,6 +119,7 @@
       nerd-fonts.jetbrains-mono
       noto-fonts
       font-awesome
+      fira-code
     ];
     fontconfig.enable = true;
   };
