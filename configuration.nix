@@ -33,6 +33,10 @@
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
+    proxy = {
+      default = "http://127.0.0.1:8118";
+      noProxy = "127.0.0.1,localhost,internal.domain";
+    };
   };
 
   time.timeZone = "Europe/Moscow";
@@ -88,6 +92,7 @@
     steam.enable = true;
     xwayland.enable = true;
     obs-studio.enable = true;
+
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
