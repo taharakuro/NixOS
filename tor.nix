@@ -1,6 +1,16 @@
 { config, lib, pkgs, ... }:
 
 {
+  services.privoxy = {
+    enable = true;
+    enableTor = true; # Automatically forwards traffic to local Tor instance (127.0.0.1:9050)
+    
+    settings = {
+      "listen-address" = "127.0.0.1:8118";
+      "forward" = "/ .";
+      "forward-socks5t" = ".cache.nixos.org 127.0.0.1:9063 ."
+    };
+  };
   config = {
     services.tor = {
       enable = true;
