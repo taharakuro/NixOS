@@ -64,8 +64,6 @@
   imports = [ inputs.noctalia.homeModules.default ];
 
   programs = {
-    qt5ct.enable = true;
-    qt6ct.enable = true;
     home-manager.enable = true;
     noctalia = {
       enable = true;
