@@ -117,6 +117,10 @@
   virtualisation = {
     docker.enable = true;
     vmware.host.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+    };
   };
 
   fonts = {
@@ -154,5 +158,6 @@
     jdk21
     wineWow64Packages.waylandFull
     winetricks
+    distrobox
   ];
 }
