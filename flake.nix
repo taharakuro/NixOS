@@ -32,6 +32,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+	# Намеренно БЕЗ inputs.nixpkgs.follows = "nixpkgs" у noctalia и
+	# prismlauncher ниже. Ветка /cachix у noctalia и кэш
+	# prismlauncher.cachix.org собраны под конкретную ревизию ИХ
+	# собственного nixpkgs; если подставить сюда свой nixpkgs (26.05),
+	# стор-пути перестанут совпадать с тем, что лежит в кэше — получите
+	# промах кэша и локальную сборку Qt/QML с нуля вместо бинарника.
+	# Официальный README PrismLauncher прямо предупреждает об этом.
+	# Экономия на дублировании nixpkgs в лок-файле того не стоит.
 	noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     prismlauncher.url = "github:PrismLauncher/PrismLauncher";
@@ -61,10 +69,17 @@
             # чтобы activation не падал, если в $HOME уже лежат обычные
             # (не symlink) дотфайлы, конфликтующие с управляемыми HM
             backupFileExtension = "hm-backup";
-            # niri.nixosModules.niri сам подключает свой home-manager
-            # модуль каждому HM-пользователю, когда видит home-manager как
-            # модуль NixOS — явный sharedModules тут не нужен и вызывал
-            # двойное объявление programs.niri.finalConfig.
+            # ВАЖНО: niri здесь НЕ отдельный flake-input (его нет в inputs
+            # ниже) — programs.niri.enable в configuration.nix берётся из
+            # самого nixpkgs (модуль въехал туда начиная примерно с 25.05).
+            # У upstream home-manager своего модуля для niri пока нет
+            # (nix-community/home-manager#8700 всё ещё не смёржен), поэтому
+            # per-user конфиг niri (config.kdl) сейчас не управляется через
+            # HM — sharedModules тут заводить не на что и не нужно. Если
+            # захотите декларативный niri-конфиг через HM раньше, чем смёржат
+            # PR #8700 — единственный вариант это добавить sodiboo/niri-flake
+            # или niri-nix отдельным input'ом (но тогда нужно будет отключить
+            # nixpkgs-модуль, они конфликтуют).
             extraSpecialArgs = { inherit inputs; };
             users.tahara = import ./home.nix;
           };

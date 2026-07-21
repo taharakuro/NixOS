@@ -48,6 +48,9 @@
               "@snapshots" = {
                 mountpoint = "/.snapshots";
                 mountOptions = [ "compress=zstd:3" "noatime" "discard=async" ];
+                # Используется services.snapper.configs.root в
+                # configuration.nix — сама по себе эта субволюм ничего
+                # не снапшотит.
               };
             };
           };

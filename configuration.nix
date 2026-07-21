@@ -35,7 +35,11 @@
     firewall.enable = true;
     proxy = {
       default = "http://127.0.0.1:8118";
-      noProxy = "127.0.0.1,localhost,internal.domain";
+      # "internal.domain" убран — это плейсхолдер прямо из мануала NixOS
+      # ("Installing behind a proxy"), скопированный вместе с примером;
+      # такого домена у вас нет. Впишите сюда через запятую свои реальные
+      # локальные адреса/хосты, если появятся.
+      noProxy = "127.0.0.1,localhost";
     };
   };
 
@@ -61,6 +65,21 @@
   services.xserver.videoDrivers = [ "amdgpu" ];
   services.fstrim.enable = true;
   services.gvfs.enable = true;
+
+  # disko.nix уже создаёт и монтирует субволюм @snapshots в /.snapshots —
+  # ровно то место, куда snapper кладёт снапшоты для SUBVOLUME = "/".
+  # Без этого блока субволюм существовал, но никто в него не писал.
+  services.snapper.configs.root = {
+    SUBVOLUME = "/";
+    ALLOW_USERS = [ "tahara" ];
+    TIMELINE_CREATE = true;
+    TIMELINE_CLEANUP = true;
+    TIMELINE_LIMIT_HOURLY = 5;
+    TIMELINE_LIMIT_DAILY = 7;
+    TIMELINE_LIMIT_WEEKLY = 4;
+    TIMELINE_LIMIT_MONTHLY = 3;
+    TIMELINE_LIMIT_YEARLY = 0;
+  };
 
   zramSwap.enable = true;
 
