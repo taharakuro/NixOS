@@ -92,18 +92,6 @@
     steam.enable = true;
     xwayland.enable = true;
     obs-studio.enable = true;
-    appimage = {
-      enable = true;
-      binfmt = true;
-      package = pkgs.appimage-run.override {
-        extraPkgs = pkgs: [
-          pkgs.icu
-          pkgs.libxcrypt-legacy
-          pkgs.python312
-          pkgs.python312Packages.torch
-        ];
-      };
-    };
   };
    programs.nix-ld.enable = true;
    programs.nix-ld.libraries = with pkgs; [
