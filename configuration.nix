@@ -169,5 +169,6 @@
     wineWow64Packages.waylandFull
     winetricks
     distrobox
+    fragments
   ];
 }
