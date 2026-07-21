@@ -105,7 +105,12 @@
       };
     };
   };
-
+   programs.nix-ld.enable = true;
+   programs.nix-ld.libraries = with pkgs; [
+     stdenv.cc.cc.lib zlib glib freetype fontconfig
+     xorg.libX11 xorg.libXext xorg.libXrandr xorg.libXtst xorg.libXi
+     alsa-lib libpulseaudio
+   ];
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
   # Screenshot/ScreenCast в xdg-desktop-portal-gnome, а не в -wlr — так что
   # именно gnome-портал и нужно ставить, чтобы шаринг экрана/скриншоты
