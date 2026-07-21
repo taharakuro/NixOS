@@ -117,10 +117,6 @@
   virtualisation = {
     docker.enable = true;
     vmware.host.enable = true;
-    podman = {
-      enable = true;
-      dockerCompat = true;
-    };
   };
 
   fonts = {
