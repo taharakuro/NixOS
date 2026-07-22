@@ -3,14 +3,6 @@
   let
     sddm-astronaut = pkgs.sddm-astronaut.override {
       embeddedTheme = "hyprland_kath";
-
-      themeConfig = {
-        Font = "JetBrainsMono Nerd Font";
-        FontSize = "10";
-
-        # при желании можно изменить
-        # Background = "Backgrounds/background.png";
-      };
     };
   in
 
@@ -115,7 +107,7 @@
       extraPackages = with pkgs; [
         kdePackages.qtmultimedia # Required for video backgrounds/audio
       ];
-      theme = "sddm-hyprland_kath-theme";
+      theme = "sddm-astronaut-theme";
     };
   };
 
