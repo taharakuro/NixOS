@@ -101,7 +101,7 @@
       extraPackages = with pkgs; [
         kdePackages.qtmultimedia # Required for video backgrounds/audio
       ];
-      theme = "sddm-astronaut-theme";
+      theme = "sddm-hyprland_kath-theme";
     };
   };
 
