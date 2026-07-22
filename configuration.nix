@@ -107,8 +107,23 @@
 
   let
     sddm-astronaut = (pkgs.sddm-astronaut.override {
-      embeddedTheme = "japanese_aesthetic";  # or any other theme
-    };
+      embeddedTheme = "hyprland_kath";
+
+      themeConfig = {
+        Background = "Backgrounds/background.png";
+
+        AccentColor = "#89b4fa";
+        HeaderTextColor = "#cdd6f4";
+        DateTextColor = "#bac2de";
+        TimeTextColor = "#ffffff";
+  
+        FormBackgroundColor = "#11111bdd";
+        LoginButtonTextColor = "#ffffff";
+
+        Font = "JetBrainsMono Nerd Font";
+        FontSize = "10";
+      };
+    });
   in
 
   security.polkit.enable = true;
