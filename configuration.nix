@@ -119,6 +119,7 @@
     steam.enable = true;
     xwayland.enable = true;
     obs-studio.enable = true;
+    gamemode.enable = true;
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
