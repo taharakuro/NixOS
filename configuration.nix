@@ -105,6 +105,12 @@
     };
   };
 
+  let
+    sddm-astronaut = (pkgs.sddm-astronaut.override {
+      embeddedTheme = "japanese_aesthetic";  # or any other theme
+    };
+  in
+
   security.polkit.enable = true;
   programs = {
     dconf.enable = true;
