@@ -39,7 +39,7 @@
       client = {
         enable = true;
         # При необходимости:
-        # dns.enable = true;
+        dns.enable = true;
       };
       settings = {
         ## Использовать мосты
