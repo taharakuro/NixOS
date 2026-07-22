@@ -92,24 +92,17 @@
   security.rtkit.enable = true;
 
   let
-    sddm-astronaut = (pkgs.sddm-astronaut.override {
+    sddm-astronaut = pkgs.sddm-astronaut.override {
       embeddedTheme = "hyprland_kath";
 
       themeConfig = {
-        Background = "Backgrounds/background.png";
-
-        AccentColor = "#89b4fa";
-        HeaderTextColor = "#cdd6f4";
-        DateTextColor = "#bac2de";
-        TimeTextColor = "#ffffff";
-  
-        FormBackgroundColor = "#11111bdd";
-        LoginButtonTextColor = "#ffffff";
-
         Font = "JetBrainsMono Nerd Font";
         FontSize = "10";
+
+        # при желании можно изменить
+        # Background = "Backgrounds/background.png";
       };
-    });
+    };
   in
 
   services = {
