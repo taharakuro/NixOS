@@ -97,6 +97,7 @@
     displayManager.sddm = {
       enable = true;
       package = pkgs.kdePackages.sddm;
+      wayland.enable = true;
       extraPackages = with pkgs; [
         kdePackages.qtmultimedia # Required for video backgrounds/audio
       ];
