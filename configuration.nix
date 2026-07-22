@@ -91,20 +91,6 @@
   };
   security.rtkit.enable = true;
 
-  services = {
-    power-profiles-daemon.enable = true;
-    upower.enable = true;
-    displayManager.sddm = {
-      enable = true;
-      package = pkgs.kdePackages.sddm;
-      wayland.enable = true;
-      extraPackages = with pkgs; [
-        kdePackages.qtmultimedia # Required for video backgrounds/audio
-      ];
-      theme = "sddm-hyprland_kath-theme";
-    };
-  };
-
   let
     sddm-astronaut = (pkgs.sddm-astronaut.override {
       embeddedTheme = "hyprland_kath";
@@ -125,6 +111,20 @@
       };
     });
   in
+
+  services = {
+    power-profiles-daemon.enable = true;
+    upower.enable = true;
+    displayManager.sddm = {
+      enable = true;
+      package = pkgs.kdePackages.sddm;
+      wayland.enable = true;
+      extraPackages = with pkgs; [
+        kdePackages.qtmultimedia # Required for video backgrounds/audio
+      ];
+      theme = "sddm-hyprland_kath-theme";
+    };
+  };
 
   security.polkit.enable = true;
   programs = {
