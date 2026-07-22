@@ -1,5 +1,19 @@
 { lib, pkgs, ... }:
 
+  let
+    sddm-astronaut = pkgs.sddm-astronaut.override {
+      embeddedTheme = "hyprland_kath";
+
+      themeConfig = {
+        Font = "JetBrainsMono Nerd Font";
+        FontSize = "10";
+
+        # при желании можно изменить
+        # Background = "Backgrounds/background.png";
+      };
+    };
+  in
+
 {
   # hardware-configuration.nix появляется только после установки на
   # конкретное железо (nixos-generate-config на целевой машине). Условный
@@ -90,20 +104,6 @@
     jack.enable = true;
   };
   security.rtkit.enable = true;
-
-  let
-    sddm-astronaut = pkgs.sddm-astronaut.override {
-      embeddedTheme = "hyprland_kath";
-
-      themeConfig = {
-        Font = "JetBrainsMono Nerd Font";
-        FontSize = "10";
-
-        # при желании можно изменить
-        # Background = "Backgrounds/background.png";
-      };
-    };
-  in
 
   services = {
     power-profiles-daemon.enable = true;
