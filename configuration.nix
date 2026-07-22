@@ -94,12 +94,13 @@
   services = {
     power-profiles-daemon.enable = true;
     upower.enable = true;
-    greetd = {
+    displayManager.sddm = {
       enable = true;
-      settings.default_session = {
-        command = "${lib.getExe pkgs.tuigreet} --cmd niri-session";
-        user = "greeter";
-      };
+      package = pkgs.kdePackages.sddm;
+      extraPackages = with pkgs; [
+        kdePackages.qtmultimedia # Required for video backgrounds/audio
+      ];
+      theme = "sddm-astronaut-theme";
     };
   };
 
@@ -170,5 +171,6 @@
     winetricks
     distrobox
     fragments
+    sddm-astronaut
   ];
 }
