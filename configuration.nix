@@ -35,6 +35,21 @@
     };
   };
 
+  # Включение управления вентилятором
+  boot.extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+
+  # Настройка thinkfan с указанием датчиков (hwmon* -> temp*_input)
+  services.thinkfan = {
+    enable = true;
+    sensors = [
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; } # См. примечание ниже
+    ];
+    # Оптимизированные уровни
+    levels = [
+      [0 0 43] [1 40 52] [3 50 65] [5 60 75] [7 70 32767]
+    ];
+  };
+
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
