@@ -35,20 +35,37 @@
     };
   };
 
-  # Включение управления вентилятором
+  # Разрешаем модулю thinkpad_acpi управлять вентилятором
   boot.extraModprobeConfig = "options thinkpad_acpi fan_control=1";
 
-  # Настройка thinkfan с указанием датчиков (hwmon* -> temp*_input)
   services.thinkfan = {
     enable = true;
+    
+    # Датчики для AMD (материнская плата + процессор k10temp)
     sensors = [
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; } # См. примечание ниже
+      # Основные термодатчики шасси/платы ThinkPad
+      { 
+        type = "hwmon"; 
+        query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; 
+      }
+      # Датчик температуры ядер процессора AMD Ryzen (k10temp)
+      { 
+        type = "hwmon"; 
+        query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input"; 
+      }
     ];
-    # Оптимизированные уровни
+
+    # Настройки уровней вращения (оптимизированы под «горячий» буст AMD)
     levels = [
-      [0 0 43] [1 40 52] [3 50 65] [5 60 75] [7 70 32767]
+      [0 0 52]      # До 52°C полная тишина (вентилятор выключен)
+      [1 48 60]     # Тихий режим для браузера и офиса
+      [2 55 65]     # Средние обороты
+      [3 60 72]     # Заметный обдув при стабильной нагрузке
+      [5 67 80]     # Высокие обороты
+      [7 75 32767]  # Максимальные обороты при сильном нагреве (от 75°C и выше)
     ];
   };
+
 
   networking = {
     hostName = "nixos";
