@@ -212,5 +212,6 @@
     distrobox
     fragments
     sddm-astronaut
+    xdelta
   ];
 }
