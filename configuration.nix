@@ -1,10 +1,10 @@
 { lib, pkgs, ... }:
 
-  let
-    sddm-astronaut = pkgs.sddm-astronaut.override {
-      embeddedTheme = "hyprland_kath";
-    };
-  in
+let
+  sddm-astronaut = pkgs.sddm-astronaut.override {
+    embeddedTheme = "hyprland_kath";
+  };
+in
 
 {
   # hardware-configuration.nix появляется только после установки на
@@ -26,6 +26,17 @@
       auto-optimise-store = true;
       # не ждать по 15 секунд на каждую мёртвую попытку до зеркал
       connect-timeout = 5;
+
+      # nixConfig во flake.nix (extra-substituters/extra-trusted-public-keys)
+      # применяется автоматически только для "доверенных" пользователей —
+      # для остальных nix каждый раз просит подтверждение либо нужен флаг
+      # --accept-flake-config. root и так доверен всегда, поэтому
+      # `sudo nixos-rebuild switch` кэши уже использовал. А вот `nix build`,
+      # `nix develop`, `home-manager switch` от tahara без sudo — нет.
+      # tahara и так в группах wheel (sudo) и docker, то есть уже фактически
+      # root-эквивалентен на этой машине, так что добавление в trusted-users
+      # не открывает новых возможностей, а просто убирает лишние вопросы.
+      trusted-users = [ "root" "@wheel" ];
     };
 
     gc = {
@@ -40,18 +51,18 @@
 
   services.thinkfan = {
     enable = true;
-    
+
     # Датчики для AMD (материнская плата + процессор k10temp)
     sensors = [
       # Основные термодатчики шасси/платы ThinkPad
-      { 
-        type = "hwmon"; 
-        query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; 
+      {
+        type = "hwmon";
+        query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input";
       }
       # Датчик температуры ядер процессора AMD Ryzen (k10temp)
-      { 
-        type = "hwmon"; 
-        query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input"; 
+      {
+        type = "hwmon";
+        query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input";
       }
     ];
 
@@ -66,19 +77,18 @@
     ];
   };
 
-
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
-     proxy = {
-       default = "http://127.0.0.1:8118";
+    proxy = {
+      default = "http://127.0.0.1:8118";
       # "internal.domain" убран — это плейсхолдер прямо из мануала NixOS
       # ("Installing behind a proxy"), скопированный вместе с примером;
       # такого домена у вас нет. Впишите сюда через запятую свои реальные
       # локальные адреса/хосты, если появятся.
-       noProxy = "127.0.0.1,localhost";
-     };
+      noProxy = "127.0.0.1,localhost,::1";
+    };
   };
 
   time.timeZone = "Europe/Moscow";
@@ -88,6 +98,12 @@
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
+    # ESP (disko.nix) — всего 512M. Каждое поколение системы кладёт туда
+    # свои ядро+initrd; без лимита за много rebuild'ов раздел забьётся и
+    # nixos-rebuild однажды упадёт с "no space left on device" на /boot.
+    # nix.gc чистит стор-пути, но записи загрузчика подчищаются только
+    # при следующем rebuild — этот лимит подчищает их гарантированно.
+    loader.systemd-boot.configurationLimit = 10;
     kernelParams = [ "amd_pstate=active" ];
     tmp.cleanOnBoot = true;
   };

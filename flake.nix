@@ -8,15 +8,15 @@
   # но nix спросит подтверждение (или нужен флаг --accept-flake-config).
   nixConfig = {
     extra-substituters = [
-		"https://cache.nixos.org"
-		"https://noctalia.cachix.org"
-		"https://prismlauncher.cachix.org"
-	];
+      "https://cache.nixos.org"
+      "https://noctalia.cachix.org"
+      "https://prismlauncher.cachix.org"
+    ];
     extra-trusted-public-keys = [
-		"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-		"noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-		"prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
-	];
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
+    ];
   };
 
   inputs = {
@@ -32,15 +32,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-	# Намеренно БЕЗ inputs.nixpkgs.follows = "nixpkgs" у noctalia и
-	# prismlauncher ниже. Ветка /cachix у noctalia и кэш
-	# prismlauncher.cachix.org собраны под конкретную ревизию ИХ
-	# собственного nixpkgs; если подставить сюда свой nixpkgs (26.05),
-	# стор-пути перестанут совпадать с тем, что лежит в кэше — получите
-	# промах кэша и локальную сборку Qt/QML с нуля вместо бинарника.
-	# Официальный README PrismLauncher прямо предупреждает об этом.
-	# Экономия на дублировании nixpkgs в лок-файле того не стоит.
-	noctalia.url = "github:noctalia-dev/noctalia/cachix";
+    # Намеренно БЕЗ inputs.nixpkgs.follows = "nixpkgs" у noctalia и
+    # prismlauncher ниже. Ветка /cachix у noctalia и кэш
+    # prismlauncher.cachix.org собраны под конкретную ревизию ИХ
+    # собственного nixpkgs; если подставить сюда свой nixpkgs (26.05),
+    # стор-пути перестанут совпадать с тем, что лежит в кэше — получите
+    # промах кэша и локальную сборку Qt/QML с нуля вместо бинарника.
+    # Официальный README PrismLauncher прямо предупреждает об этом.
+    # Экономия на дублировании nixpkgs в лок-файле того не стоит.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
@@ -57,10 +57,10 @@
         disko.nixosModules.disko
         ./disko.nix
         ./configuration.nix
-	(
-	  { pkgs, ... }:
-	  { environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ]; }
-	)
+        (
+          { pkgs, ... }:
+          { environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ]; }
+        )
         home-manager.nixosModules.home-manager
         {
           home-manager = {

@@ -4,11 +4,11 @@
   config = {
     services.privoxy = {
       enable = true;
-    
+
       settings = {
         "listen-address" = "127.0.0.1:8118";
         "forward" = "/ .";
-        "forward-socks5t" = [ 
+        "forward-socks5t" = [
           ".cache.nixos.org 127.0.0.1:9063 ."
           ".releases.nixos.org 127.0.0.1:9063 ."
           ".dis.gd 127.0.0.1:9063 ."
@@ -38,7 +38,16 @@
       enable = true;
       client = {
         enable = true;
-        # При необходимости:
+        # ВАЖНО: сам по себе dns.enable ничего не резолвит через Tor — он
+        # только поднимает у tor DNS-резолвер, но на какой порт и что его
+        # реально использует, нужно указывать отдельно (settings.DNSPort +
+        # networking.nameservers = [ "127.0.0.1" ];, см. wiki.nixos.org/wiki/Tor).
+        # Сейчас этого нет, так что строка ниже — просто заглушка, ничего
+        # не делает и не мешает: домены из forward-socks5t выше и так
+        # резолвятся анонимно (сам SOCKS5 у Tor резолвит DNS удалённо), а
+        # весь остальной DNS идёт как обычно через NetworkManager/DHCP.
+        # Либо донастройте (если хотите системный DNS-over-Tor), либо
+        # уберите эту строку, если она осталась от экспериментов.
         dns.enable = true;
       };
       settings = {
@@ -48,10 +57,10 @@
         ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
         ## Мосты
         Bridge = [
-			"obfs4 195.52.145.38:1677 3234D58257F100D6B5D8AB6F43176E6946EFD513 cert=QEI46C0ldwctxz+QT+sUpvyDYSe3EhhmQOA6T4Qt3kZBzHQA7nx5ihiusL+sFASJUEEYXw iat-mode=0"
-			"obfs4 166.88.2.83:17443 7F65C4721C582D3D2CD86B678A72D88E98C1950E cert=cT0YJE4StbOtuRKVyG3gznJlDwIlj57MBbQViEt7aKRRG6gqbaycWpCz4h3+knVFhXtbaw iat-mode=0"
-			"obfs4 51.68.81.140:2098 F205CB5B969389061477609F8E03470B982F64C1 cert=6hFyrclX8Cg16jHGbtYqZxbGxj+p0flBn2EYZu+hvx/tGL4GROXSvBtwVQ1sRYFbi0++fQ iat-mode=0"
-			"obfs4 57.128.45.196:18384 E30D5552BEE79C5E8C61A943E9B3D2949F227C41 cert=boaTbcdp+rFHgUvweiAg60UUUpLZWecGl0uXRU358L/a7ZMrAnS/BodUKM3eyfWC+UVXTg iat-mode=0"
+          "obfs4 195.52.145.38:1677 3234D58257F100D6B5D8AB6F43176E6946EFD513 cert=QEI46C0ldwctxz+QT+sUpvyDYSe3EhhmQOA6T4Qt3kZBzHQA7nx5ihiusL+sFASJUEEYXw iat-mode=0"
+          "obfs4 166.88.2.83:17443 7F65C4721C582D3D2CD86B678A72D88E98C1950E cert=cT0YJE4StbOtuRKVyG3gznJlDwIlj57MBbQViEt7aKRRG6gqbaycWpCz4h3+knVFhXtbaw iat-mode=0"
+          "obfs4 51.68.81.140:2098 F205CB5B969389061477609F8E03470B982F64C1 cert=6hFyrclX8Cg16jHGbtYqZxbGxj+p0flBn2EYZu+hvx/tGL4GROXSvBtwVQ1sRYFbi0++fQ iat-mode=0"
+          "obfs4 57.128.45.196:18384 E30D5552BEE79C5E8C61A943E9B3D2949F227C41 cert=boaTbcdp+rFHgUvweiAg60UUUpLZWecGl0uXRU358L/a7ZMrAnS/BodUKM3eyfWC+UVXTg iat-mode=0"
         ];
 
         # "Быстрый" SOCKS без строгой изоляции — для nix-daemon ниже.
