@@ -10,10 +10,12 @@
     extra-substituters = [
       "https://cache.nixos.org"
       "https://noctalia.cachix.org"
+      "https://prismlauncher.cachix.org"
     ];
     extra-trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
     ];
   };
 
@@ -39,9 +41,11 @@
     # Официальный README PrismLauncher прямо предупреждает об этом.
     # Экономия на дублировании nixpkgs в лок-файле того не стоит.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
+
+    prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
 
-  outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, prismlauncher, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
@@ -53,6 +57,10 @@
         disko.nixosModules.disko
         ./disko.nix
         ./configuration.nix
+        (
+          { pkgs, ... }:
+          { environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ]; }
+        )
         home-manager.nixosModules.home-manager
         {
           home-manager = {
