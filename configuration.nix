@@ -170,6 +170,7 @@ in
     gamemode.enable = true;
     firefox = {
       enable = true;
+      languagePacks = [ "ru" "en-US" ];
       preferences = {
         "widget.use-xdg-desktop-portal.file-picker" = 1;
       };
