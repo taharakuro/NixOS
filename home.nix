@@ -58,16 +58,13 @@
   gtk = {
     # Example: Adwaita-dark, or replace with pkgs.orchis-theme, pkgs.catppuccin-gtk, etc.
     theme = {
-      name = "adw-gtk3-dark";
-      package = pkgs.adw-gtk3;
+      name = "Adwaita-dark";
+      package = pkgs.gnome.gnome-themes-extra;
     };
     font = {
       name = "DejaVu Sans 11";
       package = pkgs.dejavu_fonts;
     };
-    # Force dark application preference in GTK3 & GTK4
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     enable = true;
     iconTheme = {
       name = "Papirus-Dark";
