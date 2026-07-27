@@ -229,6 +229,5 @@ in
     fragments
     sddm-astronaut
     xdelta
-    prismlauncher
   ];
 }
