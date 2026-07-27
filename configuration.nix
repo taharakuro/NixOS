@@ -235,5 +235,6 @@ in
     fragments
     sddm-astronaut
     xdelta
+    firefox
   ];
 }
