@@ -168,6 +168,12 @@ in
     xwayland.enable = true;
     obs-studio.enable = true;
     gamemode.enable = true;
+    firefox = {
+      enable = true;
+      preferences = {
+        "widget.use-xdg-desktop-portal.file-picker" = 1;
+      };
+    };
   };
 
   # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
@@ -235,6 +241,5 @@ in
     fragments
     sddm-astronaut
     xdelta
-    firefox
   ];
 }
