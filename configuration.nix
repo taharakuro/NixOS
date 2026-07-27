@@ -198,6 +198,7 @@ in
       fira-code
       dejavu_fonts
     ];
+    fontDir.enable = true;
     fontconfig.enable = true;
   };
 
