@@ -194,6 +194,9 @@ in
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-emoji
+      liberation_ttf
       font-awesome
       fira-code
       dejavu_fonts
