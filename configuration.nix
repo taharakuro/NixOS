@@ -196,6 +196,7 @@ in
       noto-fonts
       font-awesome
       fira-code
+      dejavu-fonts
     ];
     fontconfig.enable = true;
   };
