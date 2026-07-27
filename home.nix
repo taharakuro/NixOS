@@ -61,6 +61,10 @@
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
+    font = {
+      name = "DejaVu Sans 11";
+      package = pkgs.dejavu_fonts;
+    };
     # Force dark application preference in GTK3 & GTK4
     gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
     gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
