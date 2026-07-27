@@ -30,6 +30,47 @@
     ];
   };
 
+  dconf = {
+    enable = true;
+    settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+        # Без этого ключа xdg-desktop-portal-gnome (Settings-портал, которым
+        # пользуется Firefox под Wayland) сообщает приложениям пару
+        # "тёмный режим включён" + "тема — дефолтная светлая Adwaita" (её
+        # тут нет — реальная тема ставится ниже через gtk.theme.name, а
+        # это пишет только settings.ini, до dconf/портала не долетает).
+        # Firefox в этом рассинхроне красит текст меню тем же цветом, что
+        # и фон — снаружи выглядит как "пропали буквы". Дублируем то же
+        # имя темы сюда, чтобы портал отдавал согласованную пару.
+        gtk-theme = "adw-gtk3-dark";
+      };
+    };
+  };
+  qt = {
+    enable = true;
+    platformTheme.name = "qtct"; # or "gnome" or "qtct"
+    style = {
+      name = "adwaita-dark";   # Choose "Adwaita-Dark" or "Breeze-Dark"
+      package = pkgs.adwaita-qt;
+    };
+  };
+  gtk = {
+    # Example: Adwaita-dark, or replace with pkgs.orchis-theme, pkgs.catppuccin-gtk, etc.
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+    # Force dark application preference in GTK3 & GTK4
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+    enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
+
   imports = [ inputs.noctalia.homeModules.default ];
 
   programs = {
