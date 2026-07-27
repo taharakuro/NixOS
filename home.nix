@@ -59,7 +59,7 @@
     # Example: Adwaita-dark, or replace with pkgs.orchis-theme, pkgs.catppuccin-gtk, etc.
     theme = {
       name = "Adwaita-dark";
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
     };
     font = {
       name = "DejaVu Sans 11";
