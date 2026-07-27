@@ -81,14 +81,14 @@ in
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
-    proxy = {
-      default = "http://127.0.0.1:8118";
+    # proxy = {
+    #  default = "http://127.0.0.1:8118";
       # "internal.domain" убран — это плейсхолдер прямо из мануала NixOS
       # ("Installing behind a proxy"), скопированный вместе с примером;
       # такого домена у вас нет. Впишите сюда через запятую свои реальные
       # локальные адреса/хосты, если появятся.
-      noProxy = "127.0.0.1,localhost,::1";
-    };
+    #  noProxy = "127.0.0.1,localhost,::1";
+    # };
   };
 
   time.timeZone = "Europe/Moscow";
