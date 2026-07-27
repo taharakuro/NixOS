@@ -200,6 +200,7 @@ in
       font-awesome
       fira-code
       dejavu_fonts
+      freefont_ttf
     ];
     fontDir.enable = true;
     fontconfig.enable = true;
