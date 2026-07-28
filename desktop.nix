@@ -15,7 +15,7 @@ in
     dconf.enable = true;
     niri.enable = true;
     # Начиная с NixOS 25.11 модуль niri сам добавляет xwayland-satellite
-    # в PATH (services.niri.xwayland-satellite.enable = true по
+    # в PATH (programs.niri.xwayland-satellite.enable = true по
     # умолчанию, т.к. niri интегрируется с ним "из коробки" с версии
     # 25.08 и запускает по требованию, когда приходит X11-клиент) —
     # раньше пакет приходилось прописывать руками в
@@ -62,13 +62,15 @@ in
   };
   security.rtkit.enable = true;
 
-  # Secret Service (хранилище паролей Wi-Fi/браузера/git-credential) —
-  # niri не поднимает его сам, как это делает полноценное DE.
-  # enableGnomeKeyring нужен именно под sddm (а не "login"), иначе связка
-  # pam+keyring не разблокируется автоматически при входе.
+  # Secret Service (хранилище паролей Wi-Fi/браузера/git-credential).
+  # Сам демон gnome-keyring уже включён модулем programs.niri
+  # (services.gnome.gnome-keyring.enable = lib.mkDefault true в
+  # nixos/modules/programs/wayland/niri.nix, nixpkgs release-26.05) —
+  # отдельно его тут больше не включаем. А вот enableGnomeKeyring нужен
+  # именно под sddm (а не "login"), иначе связка pam+keyring не
+  # разблокируется автоматически при входе — этого модуль niri не делает.
   # См. https://wiki.nixos.org/wiki/Secret_Service и
   # https://wiki.nixos.org/wiki/Niri (раздел "Example systemd Setup")
-  services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
 
   # Тот же раздел wiki рекомендует отдельный PAM-сервис для swaylock —
