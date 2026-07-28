@@ -45,46 +45,22 @@
     prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
 
-  outputs = { nixpkgs, home-manager, disko, prismlauncher, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
+      # inputs целиком (в т.ч. prismlauncher и noctalia) доступен как
+      # аргумент модуля в любом файле из imports ниже по цепочке —
+      # раньше обёртка PrismLauncher жила прямо здесь анонимным модулем,
+      # теперь она переехала в gaming.nix, а сюда попадает через inputs.
       specialArgs = { inherit inputs; };
 
       modules = [
         disko.nixosModules.disko
         ./disko.nix
         ./configuration.nix
-        (
-          { pkgs, lib, ... }:
-          let
-            # Бинарник берётся прямо из апстримного флейка PrismLauncher
-            # (см. комментарий у prismlauncher.url выше) в обход обычной
-            # обёртки wrapGAppsHook, которую даёт версия из nixpkgs. Из-за
-            # этого GLib/GIO внутри программы не находит скомпилированные
-            # GSettings-схемы (например, при открытии нативного диалога
-            # выбора файла) и падает с
-            # "GLib-GIO-ERROR: No GSettings schemas are installed on the
-            # system" (SIGABRT/SIGTRAP) — типовая проблема на не-GNOME/KDE
-            # окружениях вроде niri. symlinkJoin + wrapProgram донабрасывают
-            # нужные пути в XDG_DATA_DIRS/GIO_EXTRA_MODULES, как это делает
-            # для GTK-приложений сам wrapGAppsHook в nixpkgs.
-            prismlauncher-wrapped = pkgs.symlinkJoin {
-              name = "prismlauncher-wrapped";
-              paths = [ prismlauncher.packages.${pkgs.system}.prismlauncher ];
-              buildInputs = [ pkgs.makeWrapper ];
-              postBuild = ''
-                wrapProgram $out/bin/prismlauncher \
-                  --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}" \
-                  --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
-                  --prefix GIO_EXTRA_MODULES : "${lib.getLib pkgs.dconf}/lib/gio/modules"
-              '';
-            };
-          in
-          { environment.systemPackages = [ prismlauncher-wrapped ]; }
-        )
         home-manager.nixosModules.home-manager
         {
           home-manager = {
@@ -94,16 +70,22 @@
             # (не symlink) дотфайлы, конфликтующие с управляемыми HM
             backupFileExtension = "hm-backup";
             # ВАЖНО: niri здесь НЕ отдельный flake-input (его нет в inputs
-            # ниже) — programs.niri.enable в configuration.nix берётся из
-            # самого nixpkgs (модуль въехал туда начиная примерно с 25.05).
-            # У upstream home-manager своего модуля для niri пока нет
-            # (nix-community/home-manager#8700 всё ещё не смёржен), поэтому
-            # per-user конфиг niri (config.kdl) сейчас не управляется через
-            # HM — sharedModules тут заводить не на что и не нужно. Если
-            # захотите декларативный niri-конфиг через HM раньше, чем смёржат
-            # PR #8700 — единственный вариант это добавить sodiboo/niri-flake
-            # или niri-nix отдельным input'ом (но тогда нужно будет отключить
-            # nixpkgs-модуль, они конфликтуют).
+            # выше) — programs.niri.enable в desktop.nix берётся из
+            # самого nixpkgs (модуль въехал туда начиная примерно с
+            # 25.05). У upstream home-manager своего модуля для niri пока
+            # нет (nix-community/home-manager#8700 всё ещё не смёржен по
+            # состоянию на середину 2026 — см. также обсуждение в
+            # AvengeMedia/DankMaterialShell#1788 про то, почему это до
+            # сих пор больно), поэтому per-user конфиг niri (config.kdl и
+            # остальные *.kdl) сейчас не управляется через HM —
+            # sharedModules тут заводить не на что и не нужно. *.kdl из
+            # niri/ в этом репозитории просто симлинкуются руками (или
+            # через home.file, если захотите) в ~/.config/niri/. Если
+            # захотите декларативный niri-конфиг через HM раньше, чем
+            # смёржат PR #8700 — единственный вариант это добавить
+            # sodiboo/niri-flake или niri-nix отдельным input'ом (но
+            # тогда нужно будет отключить nixpkgs-модуль, они
+            # конфликтуют).
             extraSpecialArgs = { inherit inputs; };
             users.tahara = import ./home.nix;
           };
