@@ -25,15 +25,6 @@
           content = {
             type = "swap";
             resumeDevice = true;
-            # TRIM для раздела подкачки на NVMe: для свопа discard
-            # задаётся не как mountOption (это не файловая система), а
-            # отдельной политикой — "both" включает и разовый discard
-            # при swapon, и постраничный по мере освобождения (см.
-            # swapDevices.*.discardPolicy и swapon(8)). Раньше свопу
-            # никакого TRIM не доставалось — btrfs-субволюмы ниже уже
-            # используют discard=async, а свопу эта опция сама по себе
-            # не передаётся.
-            discardPolicy = "both";
           };
         };
         root = {

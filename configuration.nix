@@ -1,5 +1,11 @@
 { lib, pkgs, ... }:
 
+let
+  sddm-astronaut = pkgs.sddm-astronaut.override {
+    embeddedTheme = "hyprland_kath";
+  };
+in
+
 {
   # hardware-configuration.nix появляется только после установки на
   # конкретное железо (nixos-generate-config на целевой машине). Условный
@@ -7,25 +13,8 @@
   # флейка ещё ДО того, как этот файл закоммичен в репозиторий — иначе
   # вычисление всей конфигурации падает с "file not found" на самом первом
   # шаге (партиционировании), когда файла ещё физически не существует.
-  #
-  # Остальная конфигурация разложена по темам — так проще найти нужную
-  # опцию и не путать «личное» (tor.nix — реальные мосты) с общим:
-  #   laptop.nix         — специфика именно этого железа (ThinkPad, AMD,
-  #                         вентилятор, SSD)
-  #   desktop.nix         — Wayland-сессия: niri, SDDM, XDG-порталы,
-  #                         звук, Secret Service, шрифты
-  #   gaming.nix          — Steam, Wine, PrismLauncher
-  #   virtualisation.nix  — Docker, VMware
-  #   packages.nix        — приложения без собственных системных опций
-  #   tor.nix             — privoxy + Tor SOCKS для отдельных доменов
-  imports = [
-    ./tor.nix
-    ./laptop.nix
-    ./desktop.nix
-    ./gaming.nix
-    ./virtualisation.nix
-    ./packages.nix
-  ] ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
+  imports = [ ./tor.nix ]
+    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
 
   system.stateVersion = "26.05";
 
@@ -57,22 +46,64 @@
     };
   };
 
+  # Разрешаем модулю thinkpad_acpi управлять вентилятором
+  boot.extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+
+  services.thinkfan = {
+    enable = true;
+
+    # Датчики для AMD (материнская плата + процессор k10temp)
+    sensors = [
+      # Основные термодатчики шасси/платы ThinkPad
+      {
+        type = "hwmon";
+        query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input";
+      }
+      # Датчик температуры ядер процессора AMD Ryzen (k10temp)
+      {
+        type = "hwmon";
+        query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input";
+      }
+    ];
+
+    # Настройки уровней вращения (оптимизированы под «горячий» буст AMD)
+    levels = [
+      [0 0 52]      # До 52°C полная тишина (вентилятор выключен)
+      [1 48 60]     # Тихий режим для браузера и офиса
+      [2 55 65]     # Средние обороты
+      [3 60 72]     # Заметный обдув при стабильной нагрузке
+      [5 67 80]     # Высокие обороты
+      [7 75 32767]  # Максимальные обороты при сильном нагреве (от 75°C и выше)
+    ];
+  };
+
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
-    # proxy = {
-    #  default = "http://127.0.0.1:8118";
+    proxy = {
+      default = "http://127.0.0.1:8118";
       # "internal.domain" убран — это плейсхолдер прямо из мануала NixOS
       # ("Installing behind a proxy"), скопированный вместе с примером;
       # такого домена у вас нет. Впишите сюда через запятую свои реальные
       # локальные адреса/хосты, если появятся.
-    #  noProxy = "127.0.0.1,localhost,::1";
-    # };
+      noProxy = "127.0.0.1,localhost,::1";
+    };
   };
 
   time.timeZone = "Europe/Moscow";
   i18n.defaultLocale = "ru_RU.UTF-8";
+
+  # Раскладка клавиатуры для GUI (niri и вообще всё через Wayland/libxkbcommon
+  # читает именно этот системный xkb-конфиг, X11 тут не нужен). Без него
+  # раскладки для переключения нет вообще — только us "из коробки".
+  services.xserver.xkb = {
+    layout = "us,ru";
+    options = "grp:alt_shift_toggle";
+  };
+
+  # Виртуальная консоль (голый TTY, Ctrl+Alt+F2) — раскладка отдельно от
+  # xkb выше; сознательно оставляю us, переключать её там неудобно.
   console.keyMap = "us";
 
   boot = {
@@ -84,8 +115,21 @@
     # nix.gc чистит стор-пути, но записи загрузчика подчищаются только
     # при следующем rebuild — этот лимит подчищает их гарантированно.
     loader.systemd-boot.configurationLimit = 10;
+    kernelParams = [ "amd_pstate=active" ];
     tmp.cleanOnBoot = true;
   };
+
+  hardware = {
+    graphics = {
+      enable = true;
+      enable32Bit = true; # нужно Steam / Proton для 32-битных игр
+    };
+    enableRedistributableFirmware = true;
+    bluetooth.enable = true;
+  };
+  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.fstrim.enable = true;
+  services.gvfs.enable = true;
 
   # disko.nix уже создаёт и монтирует субволюм @snapshots в /.snapshots —
   # ровно то место, куда snapper кладёт снапшоты для SUBVOLUME = "/".
@@ -104,11 +148,97 @@
 
   zramSwap.enable = true;
 
-  programs.fish.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
+  security.rtkit.enable = true;
+
+  services = {
+    power-profiles-daemon.enable = true;
+    upower.enable = true;
+    displayManager.sddm = {
+      enable = true;
+      package = pkgs.kdePackages.sddm;
+      wayland.enable = true;
+      extraPackages = with pkgs; [
+        kdePackages.qtmultimedia # Required for video backgrounds/audio
+      ];
+      theme = "sddm-astronaut-theme";
+    };
+  };
+
+  security.polkit.enable = true;
+  programs = {
+    dconf.enable = true;
+    niri.enable = true;
+    fish.enable = true;
+    steam.enable = true;
+    xwayland.enable = true;
+    obs-studio.enable = true;
+    gamemode.enable = true;
+  };
+
+  # niri по умолчанию (через свой niri-portals.conf) шлёт запросы
+  # Screenshot/ScreenCast в xdg-desktop-portal-gnome, а не в -wlr — так что
+  # именно gnome-портал и нужно ставить, чтобы шаринг экрана/скриншоты
+  # реально работали. -gtk оставляем для FileChooser и обычных GTK-приложений.
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
+  };
 
   users.users.tahara = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" ];
     shell = pkgs.fish;
   };
+
+  virtualisation = {
+    docker.enable = true;
+    vmware.host.enable = true;
+  };
+
+  fonts = {
+    packages = with pkgs; [
+      nerd-fonts.jetbrains-mono
+      noto-fonts
+      font-awesome
+      fira-code
+    ];
+    fontconfig.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    vim
+    git
+    wget
+    curl
+    fastfetch
+    htop
+    btop
+    tree
+    ripgrep
+    fd
+    telegram-desktop
+    xwayland-satellite
+    discord
+    vmware-workstation
+    mpvpaper
+    vlc
+    ffmpeg
+    eog
+    spotify
+    gedit
+    obsidian
+    jdk21
+    wineWow64Packages.waylandFull
+    winetricks
+    distrobox
+    fragments
+    sddm-astronaut
+    xdelta
+  ];
 }
