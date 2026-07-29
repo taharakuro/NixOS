@@ -60,6 +60,7 @@
       wineWow64Packages.waylandFull
       winetricks
       distrobox
+      blockbench
     ];
   };
   dconf = {
