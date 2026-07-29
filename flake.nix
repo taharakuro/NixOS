@@ -8,15 +8,17 @@
   # но nix спросит подтверждение (или нужен флаг --accept-flake-config).
   nixConfig = {
     extra-substituters = [
-      "https://cache.nixos.org"
       "https://noctalia.cachix.org"
       "https://prismlauncher.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
     ];
+    # ИСПРАВЛЕНО: cache.nixos.org отсюда убран — он и так входит в
+    # substituters по умолчанию на любой стандартной установке NixOS
+    # (включая установочный ISO), добавление его как extra-* было чистой
+    # редупликацией без эффекта.
   };
 
   inputs = {
@@ -46,20 +48,18 @@
   };
 
   outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
-    # nixfmt-rfc-style — устаревший алиас начиная с релиза 26.05 (сам
-    # RFC-166-форматтер теперь называется просто nixfmt). См. nixpkgs
-    # issue #425583.
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
-      # inputs целиком (в т.ч. prismlauncher и noctalia) доступен как
-      # аргумент модуля в любом файле из imports ниже по цепочке —
-      # раньше обёртка PrismLauncher жила прямо здесь анонимным модулем,
-      # теперь она переехала в gaming.nix, а сюда попадает через inputs.
       specialArgs = { inherit inputs; };
 
+      # ИСПРАВЛЕНО: инлайн-модуль, ставивший prismlauncher прямо здесь,
+      # убран — это была единственная "политика" (что ставить), жившая в
+      # flake.nix, а не в configuration.nix. Пакет теперь ставится в
+      # configuration.nix через inputs.prismlauncher (доступен благодаря
+      # specialArgs выше) — рядом со всем остальным списком пакетов.
       modules = [
         disko.nixosModules.disko
         ./disko.nix
@@ -73,22 +73,16 @@
             # (не symlink) дотфайлы, конфликтующие с управляемыми HM
             backupFileExtension = "hm-backup";
             # ВАЖНО: niri здесь НЕ отдельный flake-input (его нет в inputs
-            # выше) — programs.niri.enable в desktop.nix берётся из
-            # самого nixpkgs (модуль въехал туда начиная примерно с
-            # 25.05). У upstream home-manager своего модуля для niri пока
-            # нет (nix-community/home-manager#8700 всё ещё не смёржен по
-            # состоянию на середину 2026 — см. также обсуждение в
-            # AvengeMedia/DankMaterialShell#1788 про то, почему это до
-            # сих пор больно), поэтому per-user конфиг niri (config.kdl и
-            # остальные *.kdl) сейчас не управляется через HM —
-            # sharedModules тут заводить не на что и не нужно. *.kdl из
-            # niri/ в этом репозитории просто симлинкуются руками (или
-            # через home.file, если захотите) в ~/.config/niri/. Если
-            # захотите декларативный niri-конфиг через HM раньше, чем
-            # смёржат PR #8700 — единственный вариант это добавить
-            # sodiboo/niri-flake или niri-nix отдельным input'ом (но
-            # тогда нужно будет отключить nixpkgs-модуль, они
-            # конфликтуют).
+            # ниже) — programs.niri.enable в configuration.nix берётся из
+            # самого nixpkgs (модуль въехал туда начиная примерно с 25.05).
+            # У upstream home-manager своего модуля для niri пока нет
+            # (nix-community/home-manager#8700 всё ещё не смёржен), поэтому
+            # per-user конфиг niri (config.kdl) сейчас не управляется через
+            # HM — sharedModules тут заводить не на что и не нужно. Если
+            # захотите декларативный niri-конфиг через HM раньше, чем смёржат
+            # PR #8700 — единственный вариант это добавить sodiboo/niri-flake
+            # или niri-nix отдельным input'ом (но тогда нужно будет отключить
+            # nixpkgs-модуль, они конфликтуют).
             extraSpecialArgs = { inherit inputs; };
             users.tahara = import ./home.nix;
           };

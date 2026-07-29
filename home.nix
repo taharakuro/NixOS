@@ -21,57 +21,72 @@
       wl-clipboard
       grim
       slurp
-      # swaylock — не основной лок-скрин (тот встроен в noctalia, см.
-      # keybinds.kdl и services.swayidle ниже), а аварийный, на случай
-      # если сам noctalia упадёт или ещё не успел запуститься. PAM для
-      # него настроен в desktop.nix (security.pam.services.swaylock).
-      swaylock
       nautilus
       pavucontrol
       networkmanagerapplet
-      # mako и fuzzel убраны: у noctalia есть собственные уведомления и
-      # лаунчер (Mod+D уже вызывает "noctalia msg panel-toggle launcher"
-      # в keybinds.kdl, а не fuzzel). mako — отдельный демон
-      # уведомлений, конкурирующий с noctalia за один и тот же
-      # D-Bus-интерфейс org.freedesktop.Notifications: держать оба сразу
-      # значит гадать, какой из них ответит на конкретное уведомление.
+
+      # ПРОВЕРИТЬ: Noctalia сама позиционируется как all-in-one шелл со
+      # своими встроенными уведомлениями, лончером и экраном блокировки.
+      # fuzzel/mako/swaylock ниже могут их дублировать (в частности, у
+      # mako и встроенных уведомлений Noctalia может быть конфликт за
+      # DBus-имя org.freedesktop.Notifications — выигрывает тот, кто
+      # запустился первым). Ничего не убрано — решите сами:
+      #   а) довериться панелям Noctalia → удалить fuzzel/mako/swaylock
+      #      и в services.swayidle ниже заменить `swaylock -f` на IPC-
+      #      команду Noctalia (см. "IPC Command Reference" в её доках);
+      #   б) оставить как есть → тогда стоит явно отключить
+      #      соответствующие панели/сервисы у Noctalia, если такая
+      #      возможность у неё предусмотрена, чтобы не было двух
+      #      процессов, отвечающих за одно и то же.
+      fuzzel
+      mako
+      swaylock
+
+      # ПЕРЕНЕСЕНО из configuration.nix (environment.systemPackages):
+      # пользовательские GUI/CLI-программы одного пользователя. Через
+      # `home-manager switch` их установка/обновление не требует sudo и
+      # не пересобирает всю систему (в отличие от nixos-rebuild switch).
+      telegram-desktop
+      discord
+      spotify
+      vlc
+      mpvpaper
+      eog
+      gedit
+      obsidian
+      fragments
+      xdelta
+      jdk21
+      wineWow64Packages.waylandFull
+      winetricks
+      distrobox
     ];
   };
-
   dconf = {
     enable = true;
     settings = {
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
-        # Без этого ключа xdg-desktop-portal-gnome (Settings-портал, которым
-        # пользуется Firefox под Wayland) сообщает приложениям пару
-        # "тёмный режим включён" + "тема — дефолтная светлая Adwaita" (её
-        # тут нет — реальная тема ставится ниже через gtk.theme.name, а
-        # это пишет только settings.ini, до dconf/портала не долетает).
-        # Firefox в этом рассинхроне красит текст меню тем же цветом, что
-        # и фон — снаружи выглядит как "пропали буквы". Дублируем то же
-        # имя темы сюда, чтобы портал отдавал согласованную пару.
-        gtk-theme = "Adwaita-dark";
       };
     };
   };
   qt = {
     enable = true;
-    platformTheme.name = "qtct";
+    platformTheme.name = "qtct"; # or "gnome" or "qtct"
     style = {
-      name = "adwaita-dark";
+      name = "adwaita-dark"; # Choose "Adwaita-Dark" or "Breeze-Dark"
       package = pkgs.adwaita-qt;
     };
   };
   gtk = {
+    # Example: Adwaita-dark, or replace with pkgs.orchis-theme, pkgs.catppuccin-gtk, etc.
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
     };
-    font = {
-      name = "DejaVu Sans 11";
-      package = pkgs.dejavu_fonts;
-    };
+    # Force dark application preference in GTK3 & GTK4
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     enable = true;
     iconTheme = {
       name = "Papirus-Dark";
@@ -83,22 +98,36 @@
 
   programs = {
     home-manager.enable = true;
+
+    # ИСПРАВЛЕНО (нужна ваша сверка): noctalia.url в flake.nix закреплён на
+    # ветке `cachix` репозитория noctalia-dev/noctalia — это Noctalia v5
+    # (сейчас в статусе beta, нативный шелл без Quickshell). У v5 другая
+    # схема настроек: панель — именованная таблица `bar.<имя>` (шаблон,
+    # клонируется на каждый монитор), а часы — не отдельная плоская секция
+    # `clock`, а виджет внутри списка widgets.left/center/right. Старая
+    # схема (bar.position / clock.format, как было раньше) сборку не
+    # ломает, но и не факт что реально применяется — Noctalia молча
+    # игнорирует неизвестные ключи с warning в своём логе, а не с ошибкой
+    # nixos-rebuild.
+    #
+    # Ниже — реконструкция под актуальную схему (верхняя панель, часы
+    # HH:mm), сохраняющая исходный смысл настройки. Точные имена виджетов и
+    # их settings.* стоит свериться с вашей версией пакета:
+    # docs.noctalia.dev/v5/bar/ (или после первого запуска через GUI-
+    # настройки Noctalia посмотреть получившийся ~/.config/noctalia/settings.toml
+    # и перенести нужное обратно в Nix).
     noctalia = {
       enable = true;
-      # Схема Noctalia активно меняется (v5 сейчас в бете: TOML вместо
-      # JSON, у части виджетов сменился формат ключей — например, часы
-      # там задаются как отдельный виджет со своим settings.format, а не
-      # плоским clock.format). Неизвестные ключи Noctalia не роняет
-      # сборку — молча игнорирует с предупреждением в логе, так что
-      # "собралось" не значит "применилось". Если формат часов или
-      # положение бара после rebuild выглядят не так, как ниже, сверьтесь
-      # с актуальной схемой на https://docs.noctalia.dev/ для вашей
-      # версии (v4 Quickshell/JSON или v5 TOML).
       settings = {
-        bar.position = "top";
-        clock.format = "HH:mm";
+        bar."default" = {
+          position = "top";
+          widgets.left = [
+            { type = "Clock"; settings.format = "HH:mm"; }
+          ];
+        };
       };
     };
+
     kitty = {
       enable = true;
       settings = {
@@ -107,33 +136,19 @@
       };
     };
     fish.enable = true;
+    firefox.enable = true;
     direnv = {
       enable = true;
       nix-direnv.enable = true;
     };
   };
 
-  # Агент авторизации polkit: niri, в отличие от полноценного DE, сам
-  # его не поднимает, а без агента приложения, которым нужны root-права
-  # через polkit (точки монтирования в Nautilus, часть действий
-  # NetworkManager и т.д.), просто не покажут диалог с паролем.
-  # security.polkit.enable в desktop.nix включает только сам демон, а
-  # не GUI-агента — это разные вещи.
-  # См. https://wiki.nixos.org/wiki/Niri (раздел "Example systemd Setup")
-  services.polkit-gnome.enable = true;
-
   services.swayidle = {
     enable = true;
     timeouts = [
       {
         timeout = 300;
-        # Тот же вызов, что и в Mod+Alt+L из keybinds.kdl — родной
-        # лок-скрин noctalia, а не отдельный swaylock. Раньше здесь стоял
-        # голый "swaylock -f", хотя ручной хоткей блокирует экран через
-        # noctalia — на практике это два разных клиента одного и того же
-        # протокола ext-session-lock-v1, и выглядели они по-разному в
-        # зависимости от того, сработал таймаут или хоткей.
-        command = "qs -c noctalia-shell ipc call lockScreen lock";
+        command = "swaylock -f";
       }
       {
         timeout = 600;
@@ -143,7 +158,7 @@
     events = [
       {
         event = "before-sleep";
-        command = "qs -c noctalia-shell ipc call lockScreen lock";
+        command = "swaylock -f";
       }
     ];
   };
