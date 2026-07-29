@@ -28,6 +28,8 @@
       #   ".cache.nixos.org 127.0.0.1:9063 ."
       #   ".releases.nixos.org 127.0.0.1:9063 ."
       "forward-socks5t" = [
+        ".cache.nixos.org 127.0.0.1:9063 ."
+        ".releases.nixos.org 127.0.0.1:9063 ."
         ".dis.gd 127.0.0.1:9063 ."
         ".discord.co 127.0.0.1:9063 ."
         ".discord.com 127.0.0.1:9063 ."
