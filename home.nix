@@ -97,6 +97,48 @@
 
   imports = [ inputs.noctalia.homeModules.default ];
 
+  # Приложения по умолчанию (пишется в ~/.config/mimeapps.list).
+  # xdg-desktop-portal (Screenshot/OpenURI и т.п. из configuration.nix)
+  # и GTK/Qt-приложения читают именно этот файл, а не что-то отдельное
+  # под niri. Список desktop-id можно свериться командой:
+  #   ls /run/current-system/sw/share/applications/ ~/.nix-profile/share/applications/
+  # После `home-manager switch` проверить: xdg-mime query default text/html
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      # Браузер — firefox из programs.firefox.enable ниже
+      "text/html" = "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/about" = "firefox.desktop";
+      "x-scheme-handler/unknown" = "firefox.desktop";
+
+      # Файловый менеджер — nautilus из home.packages выше
+      "inode/directory" = "org.gnome.Nautilus.desktop";
+
+      # Просмотр изображений — eog из configuration.nix
+      "image/png" = "org.gnome.eog.desktop";
+      "image/jpeg" = "org.gnome.eog.desktop";
+      "image/gif" = "org.gnome.eog.desktop";
+      "image/webp" = "org.gnome.eog.desktop";
+      "image/bmp" = "org.gnome.eog.desktop";
+      "image/svg+xml" = "org.gnome.eog.desktop";
+
+      # Видео/аудио — vlc из configuration.nix
+      "video/mp4" = "vlc.desktop";
+      "video/x-matroska" = "vlc.desktop";
+      "video/webm" = "vlc.desktop";
+      "audio/mpeg" = "vlc.desktop";
+      "audio/flac" = "vlc.desktop";
+
+      # Текстовые файлы — gedit из configuration.nix
+      "text/plain" = "org.gnome.gedit.desktop";
+
+      # PDF — если добавите просмотрщик PDF, впишите его .desktop сюда;
+      # сейчас в пакетах PDF-вьювера нет, поэтому не заполняю.
+    };
+  };
+
   programs = {
     home-manager.enable = true;
 
