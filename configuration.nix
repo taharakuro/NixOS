@@ -163,7 +163,7 @@ in
 
   users.users.tahara = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "wireshark" ];
     shell = pkgs.fish;
   };
 
