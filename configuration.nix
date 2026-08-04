@@ -149,6 +149,7 @@ in
     steam.enable = true;
     obs-studio.enable = true;
     gamemode.enable = true;
+    wireshark.enable = true;
     # ИСПРАВЛЕНО: programs.xwayland.enable убрано. niri не пользуется этим
     # тумблером — для XWayland у него отдельный механизм, xwayland-satellite
     # (пакет ниже). Опция ставила пакет xorg.xwayland, который niri не
