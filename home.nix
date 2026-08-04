@@ -61,6 +61,7 @@
       winetricks
       distrobox
       blockbench
+      wireshark
     ];
   };
   dconf = {
