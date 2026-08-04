@@ -34,6 +34,7 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
+    extraModprobeConfig = [ "options" "thinkpad_acpi" "fan_control=1" ]
     tmp.cleanOnBoot = true;
     # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
@@ -82,23 +83,19 @@ in
   services = {
     thinkfan = {
       enable = true;
+      smartSupport = false;
       sensors = [
-        # CPU (k10temp, Tctl). Путь по PCI-адресу SMU (00:18.3) не зависит
-        # от номера hwmonN, который может меняться между загрузками —
-        # это было верно и раньше, оставлено как есть.
-        { type = "hwmon"; query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input"; }
 
         # ДОБАВЛЕНО: встроенный Radeon (amdgpu, edge-температура). На T14s
         # Gen3 AMD CPU и GPU — один кристалл (Rembrandt), но раньше в
         # thinkfan не было отдельного GPU-сенсора: под Proton/Steam (см.
         # gaming в configuration.nix) нагрузка может быть GPU-bound, и
         # k10temp/EC-датчики реагируют на неё с запозданием.
-        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; optional = true; }
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; }
 
-        # EC-датчики ThinkPad (палмрест и т.п.). optional = true — на
-        # случай, если glob временно не найдёт файлов при старте systemd
-        # (thinkfan итак перезапускается через 30s при сбое, но так чище).
-        { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; optional = true; }
+      ];
+      fans = [
+        { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
       ];
       levels = [
         # Заполнены пропущенные уровни 4 и 6 — раньше был скачок 3→5 и
