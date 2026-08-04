@@ -34,7 +34,7 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
-    extraModprobeConfig = [ "options" "thinkpad_acpi" "fan_control=1" ]
+    extraModprobeConfig = [ "options" "thinkpad_acpi" "fan_control=1" ];
     tmp.cleanOnBoot = true;
     # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
