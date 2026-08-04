@@ -35,9 +35,14 @@ in
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
     tmp.cleanOnBoot = true;
-    # ОБЪЕДИНЕНО: раньше boot.extraModprobeConfig был отдельной строкой в
-    # другом месте файла — здесь он логичнее, среди остального boot.*
-    extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
+    # включён (nixos/modules/services/hardware/thinkfan.nix):
+    #   boot.extraModprobeConfig =
+    #     "options thinkpad_acpi experimental=1 fan_control=1";
+    # Ручная строка здесь была не ошибкой, а чистым дублированием: тип
+    # опции — lines, оба значения склеивались бы в файл modprobe.d, просто
+    # без всякой пользы. Раз thinkfan включён ниже — модуль это уже делает.
   };
 
   networking = {
@@ -78,16 +83,41 @@ in
     thinkfan = {
       enable = true;
       sensors = [
-        { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; }
+        # CPU (k10temp, Tctl). Путь по PCI-адресу SMU (00:18.3) не зависит
+        # от номера hwmonN, который может меняться между загрузками —
+        # это было верно и раньше, оставлено как есть.
         { type = "hwmon"; query = "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon*/temp1_input"; }
+
+        # ДОБАВЛЕНО: встроенный Radeon (amdgpu, edge-температура). На T14s
+        # Gen3 AMD CPU и GPU — один кристалл (Rembrandt), но раньше в
+        # thinkfan не было отдельного GPU-сенсора: под Proton/Steam (см.
+        # gaming в configuration.nix) нагрузка может быть GPU-bound, и
+        # k10temp/EC-датчики реагируют на неё с запозданием.
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; optional = true; }
+
+        # EC-датчики ThinkPad (палмрест и т.п.). optional = true — на
+        # случай, если glob временно не найдёт файлов при старте systemd
+        # (thinkfan итак перезапускается через 30s при сбое, но так чище).
+        { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon*/temp*_input"; optional = true; }
       ];
       levels = [
-        [0 0 52]
+        # Заполнены пропущенные уровни 4 и 6 — раньше был скачок 3→5 и
+        # 5→7, из-за чего кулер резко "прыгал" в средних режимах вместо
+        # плавного разгона. Гистерезис (low < high предыдущего уровня)
+        # сохранён по образцу исходного конфига.
+        [0 0  55]
         [1 48 60]
-        [2 55 65]
-        [3 60 72]
-        [5 67 80]
-        [7 75 32767]
+        [2 55 63]
+        [3 60 66]
+        [4 63 69]
+        [5 66 72]
+        [6 69 75]
+        [7 72 80]
+        # ДОБАВЛЕНО: аварийный уровень выше level 7 — thinkpad_acpi
+        # ограничен диапазоном 0-7, а "level disengaged" отключает лимит
+        # EC и разгоняет кулер как потребуется. Раньше level 7 с high =
+        # 32767 не имел, куда эскалировать при реальном перегреве.
+        ["level disengaged" 78 32767]
       ];
     };
 
