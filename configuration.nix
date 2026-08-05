@@ -34,18 +34,16 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
+    extraModprobeConfig = '' options thinkpad_acpi fan_control=1 '';
     tmp.cleanOnBoot = true;
-    # ИСПРАВЛЕНО: строка extraModprobeConfig = "options thinkpad_acpi
-    # fan_control=1" оставалась здесь активной, хотя комментарий ниже уже
-    # описывал её как убранную — по факту убрана не была. services.thinkfan
-    # сам добавляет нужную опцию модпробу, когда включён
-    # (nixos/modules/services/hardware/thinkfan.nix):
+    # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
+    # включён (nixos/modules/services/hardware/thinkfan.nix):
     #   boot.extraModprobeConfig =
     #     "options thinkpad_acpi experimental=1 fan_control=1";
-    # Ручная строка была чистым дублированием (тип опции — lines, оба
-    # значения просто склеились бы в файл modprobe.d без всякой пользы).
-    # Раз thinkfan включён ниже — модуль это уже делает, и строка теперь
-    # реально удалена, а не только описана как удалённая.
+    # Ручная строка здесь была не ошибкой, а чистым дублированием: тип
+    # опции — lines, оба значения склеивались бы в файл modprobe.d, просто
+    # без всякой пользы. Раз thinkfan включён ниже — модуль это уже делает.
   };
 
   networking = {
@@ -88,31 +86,50 @@ in
       smartSupport = false;
       sensors = [
 
-        # CPU (k10temp, Tctl). На Rembrandt (Ryzen 6000 U-серии, монолитный
-        # кристалл без чиплетов) это единственный температурный вход —
-        # indices = [1] соответствует temp1_input.
+        # ИСПРАВЛЕНО (было потеряно): EC-термозоны через thinkpad_acpi —
+        # это дефолт самого модуля services.thinkfan в nixpkgs
+        # (nixos/modules/services/hardware/thinkfan.nix), а не что-то
+        # добавленное вручную. В прошлой правке этот сенсор был полностью
+        # вытеснен единственным k10temp ниже — thinkfan видел только
+        # температуру CPU-пакета и переставал реагировать на прогрев в
+        # остальных зонах EC (в т.ч. ту, которую сама прошивка использует
+        # для родной логики вентилятора). indices не указаны намеренно —
+        # берутся все доступные зоны, как в дефолте модуля; старый баг
+        # ядра, путавший служебный EC-регистр (ID блока питания) с
+        # температурой сенсора #11, пофикшен апстримом ("thinkpad_acpi:
+        # Correct thermal sensor allocation") и давно есть в стабильных
+        # ветках, так что для 26.05 не актуален.
+        { type = "tpacpi"; query = "/proc/acpi/ibm/thermal"; }
+
+        # CPU (Tctl) через k10temp — точнее и быстрее реагирует, чем
+        # опрашиваемые через EC зоны выше.
+        # ИСПРАВЛЕНО: комментарий здесь раньше называл этот сенсор
+        # "встроенным Radeon (amdgpu, edge-температура)" — это ошибка.
+        # k10temp физически читает только температуру CPU-пакета (Tctl),
+        # к GPU он не имеет отношения ни на одном Ryzen. На Ryzen 7 PRO
+        # 6850U (Rembrandt, T14s Gen3 AMD) этот hwmon отдаёт единственный
+        # сенсор — Tctl как temp1_input, так что indices = [1] сам по
+        # себе был верным, ошибался только комментарий.
         { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; }
 
-        # ИСПРАВЛЕНО: комментарий здесь раньше утверждал, что добавлен
-        # датчик amdgpu (edge-температура встроенного Radeon 680M), но в
-        # коде повторно стояло name = "k10temp" — GPU по факту не
-        # мониторился вообще. На T14s Gen3 AMD CPU и GPU — один кристалл
-        # (Rembrandt), и под Proton/Steam (см. gaming в configuration.nix)
-        # нагрузка может быть GPU-bound: k10temp/EC реагируют на неё с
-        # запозданием. indices = [1] — edge-температура (temp1_input),
-        # она гарантирована всегда; junction/mem (temp2/3_input) есть не
-        # на всех прошивках, поэтому не берём их. optional = true — чтобы
-        # thinkfan не падал, если amdgpu ещё не зарегистрировал hwmon в
-        # момент старта сервиса (systemd всё равно перезапустит его через
-        # RestartSec, но так чище).
-        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; optional = true; }
+        # ДОБАВЛЕНО: собственно встроенный Radeon 680M — то, что
+        # предыдущая версия комментария выше ошибочно приписывала
+        # k10temp. На APU это отдельный hwmon с именем "amdgpu"
+        # (edge-температура, temp1_input). Без этого сенсора thinkfan
+        # вообще не видел нагрузку GPU — важно под Proton/Steam (см.
+        # programs.steam в этом файле), где нагрузка часто GPU-bound, а
+        # CPU-пакет при этом греется слабо.
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; }
 
-        # ДОБАВЛЕНО: NVMe. При длительной записи (обновления библиотеки
-        # Steam, распаковка, компиляция) SSD может прогреться быстрее, чем
-        # это отразится на CPU/GPU-датчиках. Здесь один накопитель NVMe,
-        # поэтому конфликт "найдено несколько hwmon с именем nvme"
-        # (bug https://github.com/vmatare/thinkfan/issues/156, актуален
-        # только при 2+ дисках) не возникает.
+        # ДОБАВЛЕНО: NVMe (единственный диск, см. disko.nix) —
+        # compress=zstd:3 + snapper (см. services.snapper ниже) дают
+        # заметную фоновую нагрузку на запись, накопитель может
+        # прогреться быстрее, чем это отследят зоны EC/CPU/GPU выше.
+        # optional = true: composite-сенсор есть почти всегда, но имя
+        # hwmon-каталога и число temp*_input отличаются между прошивками
+        # NVMe — если после первого запуска thinkfan ругается на этот
+        # сенсор, проверьте `cat /sys/class/hwmon/hwmon*/name` и
+        # поправьте indices, не убирая optional.
         { type = "hwmon"; query = "/sys/class/hwmon"; name = "nvme"; indices = [ 1 ]; optional = true; }
 
       ];
@@ -120,6 +137,11 @@ in
         { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
       ];
       levels = [
+        # Если после этой правки уровень 0 всё равно слышно — это не баг
+        # конфига: на AMD ThinkPad'ах (см. ArchWiki, ThinkPad T14 (AMD)
+        # Gen 4 §Fan control) минимальный уровень EC-прошивки сам по себе
+        # не полностью бесшумен, thinkfan тут ничего не может сделать.
+        #
         # Заполнены пропущенные уровни 4 и 6 — раньше был скачок 3→5 и
         # 5→7, из-за чего кулер резко "прыгал" в средних режимах вместо
         # плавного разгона. Гистерезис (low < high предыдущего уровня)
