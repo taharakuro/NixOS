@@ -34,16 +34,18 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
-    extraModprobeConfig = '' options thinkpad_acpi fan_control=1 '';
     tmp.cleanOnBoot = true;
-    # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
-    # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
-    # включён (nixos/modules/services/hardware/thinkfan.nix):
+    # ИСПРАВЛЕНО: строка extraModprobeConfig = "options thinkpad_acpi
+    # fan_control=1" оставалась здесь активной, хотя комментарий ниже уже
+    # описывал её как убранную — по факту убрана не была. services.thinkfan
+    # сам добавляет нужную опцию модпробу, когда включён
+    # (nixos/modules/services/hardware/thinkfan.nix):
     #   boot.extraModprobeConfig =
     #     "options thinkpad_acpi experimental=1 fan_control=1";
-    # Ручная строка здесь была не ошибкой, а чистым дублированием: тип
-    # опции — lines, оба значения склеивались бы в файл modprobe.d, просто
-    # без всякой пользы. Раз thinkfan включён ниже — модуль это уже делает.
+    # Ручная строка была чистым дублированием (тип опции — lines, оба
+    # значения просто склеились бы в файл modprobe.d без всякой пользы).
+    # Раз thinkfan включён ниже — модуль это уже делает, и строка теперь
+    # реально удалена, а не только описана как удалённая.
   };
 
   networking = {
@@ -86,12 +88,32 @@ in
       smartSupport = false;
       sensors = [
 
-        # ДОБАВЛЕНО: встроенный Radeon (amdgpu, edge-температура). На T14s
-        # Gen3 AMD CPU и GPU — один кристалл (Rembrandt), но раньше в
-        # thinkfan не было отдельного GPU-сенсора: под Proton/Steam (см.
-        # gaming в configuration.nix) нагрузка может быть GPU-bound, и
-        # k10temp/EC-датчики реагируют на неё с запозданием.
+        # CPU (k10temp, Tctl). На Rembrandt (Ryzen 6000 U-серии, монолитный
+        # кристалл без чиплетов) это единственный температурный вход —
+        # indices = [1] соответствует temp1_input.
         { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; }
+
+        # ИСПРАВЛЕНО: комментарий здесь раньше утверждал, что добавлен
+        # датчик amdgpu (edge-температура встроенного Radeon 680M), но в
+        # коде повторно стояло name = "k10temp" — GPU по факту не
+        # мониторился вообще. На T14s Gen3 AMD CPU и GPU — один кристалл
+        # (Rembrandt), и под Proton/Steam (см. gaming в configuration.nix)
+        # нагрузка может быть GPU-bound: k10temp/EC реагируют на неё с
+        # запозданием. indices = [1] — edge-температура (temp1_input),
+        # она гарантирована всегда; junction/mem (temp2/3_input) есть не
+        # на всех прошивках, поэтому не берём их. optional = true — чтобы
+        # thinkfan не падал, если amdgpu ещё не зарегистрировал hwmon в
+        # момент старта сервиса (systemd всё равно перезапустит его через
+        # RestartSec, но так чище).
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; optional = true; }
+
+        # ДОБАВЛЕНО: NVMe. При длительной записи (обновления библиотеки
+        # Steam, распаковка, компиляция) SSD может прогреться быстрее, чем
+        # это отразится на CPU/GPU-датчиках. Здесь один накопитель NVMe,
+        # поэтому конфликт "найдено несколько hwmon с именем nvme"
+        # (bug https://github.com/vmatare/thinkfan/issues/156, актуален
+        # только при 2+ дисках) не возникает.
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "nvme"; indices = [ 1 ]; optional = true; }
 
       ];
       fans = [
