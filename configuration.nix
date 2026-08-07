@@ -82,7 +82,6 @@ in
 
   services = {
     thinkfan = {
-      extraArgs = [ "-s" "10" ];
       enable = true;
       sensors = [
 
@@ -97,9 +96,6 @@ in
         # себе был верным, ошибался только комментарий.
         { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; }
 
-      ];
-      fans = [
-        { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
       ];
       levels = [
         [0 0  50]
