@@ -79,6 +79,8 @@ in
   # ни на что не влияет. amdgpu и так грузится ядром/udev по PCI ID,
   # hardware.enableRedistributableFirmware уже тянет нужные прошивки.
 
+  services.fwupd.enable = true;
+
   services = {
     thinkfan = {
       enable = true;
