@@ -82,7 +82,7 @@ in
 
   services = {
     thinkfan = {
-      extraArgs = [ "-s" "5" ];
+      extraArgs = [ "-s" "10" ];
       enable = true;
       sensors = [
 
@@ -103,7 +103,7 @@ in
       ];
       levels = [
         [0 0  50]
-        ["level auto" 45 75]
+        ["level auto" 40 75]
         ["level disengaged" 70 255]
       ];
     };
