@@ -84,7 +84,6 @@ in
     thinkfan = {
       extraArgs = [ "-s" "5" ];
       enable = true;
-      smartSupport = false;
       sensors = [
 
         # ИСПРАВЛЕНО (было потеряно): EC-термозоны через thinkpad_acpi —
@@ -112,26 +111,6 @@ in
         # сенсор — Tctl как temp1_input, так что indices = [1] сам по
         # себе был верным, ошибался только комментарий.
         { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; }
-
-        # ДОБАВЛЕНО: собственно встроенный Radeon 680M — то, что
-        # предыдущая версия комментария выше ошибочно приписывала
-        # k10temp. На APU это отдельный hwmon с именем "amdgpu"
-        # (edge-температура, temp1_input). Без этого сенсора thinkfan
-        # вообще не видел нагрузку GPU — важно под Proton/Steam (см.
-        # programs.steam в этом файле), где нагрузка часто GPU-bound, а
-        # CPU-пакет при этом греется слабо.
-        { type = "hwmon"; query = "/sys/class/hwmon"; name = "amdgpu"; indices = [ 1 ]; }
-
-        # ДОБАВЛЕНО: NVMe (единственный диск, см. disko.nix) —
-        # compress=zstd:3 + snapper (см. services.snapper ниже) дают
-        # заметную фоновую нагрузку на запись, накопитель может
-        # прогреться быстрее, чем это отследят зоны EC/CPU/GPU выше.
-        # optional = true: composite-сенсор есть почти всегда, но имя
-        # hwmon-каталога и число temp*_input отличаются между прошивками
-        # NVMe — если после первого запуска thinkfan ругается на этот
-        # сенсор, проверьте `cat /sys/class/hwmon/hwmon*/name` и
-        # поправьте indices, не убирая optional.
-        { type = "hwmon"; query = "/sys/class/hwmon"; name = "nvme"; indices = [ 1 ]; optional = true; }
 
       ];
       fans = [
