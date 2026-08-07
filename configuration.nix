@@ -82,6 +82,7 @@ in
 
   services = {
     thinkfan = {
+      extraArgs = [ "-s" "5" ];
       enable = true;
       smartSupport = false;
       sensors = [
