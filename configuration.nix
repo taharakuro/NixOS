@@ -139,7 +139,7 @@ in
       ];
       levels = [
         [0 0  50]
-        ["level auto", 45, 75]
+        ["level auto" 45 75]
         ["level disengaged" 70 255]
       ];
     };
