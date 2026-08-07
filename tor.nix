@@ -34,7 +34,7 @@
     };
   };
 
-  services.tor = {
+services.tor = {
     enable = true;
     client = {
       enable = true;
@@ -49,16 +49,15 @@
         "obfs4 51.68.81.140:2098 F205CB5B969389061477609F8E03470B982F64C1 cert=6hFyrclX8Cg16jHGbtYqZxbGxj+p0flBn2EYZu+hvx/tGL4GROXSvBtwVQ1sRYFbi0++fQ iat-mode=0"
         "obfs4 57.128.45.196:18384 E30D5552BEE79C5E8C61A943E9B3D2949F227C41 cert=boaTbcdp+rFHgUvweiAg60UUUpLZWecGl0uXRU358L/a7ZMrAnS/BodUKM3eyfWC+UVXTg iat-mode=0"
       ];
-
       # выделенный SOCKS-порт под privoxy, не пересекается со стандартным
       # клиентским 9050 (services.tor.client.enable выше)
       SOCKSPort = [
         {
           addr = "127.0.0.1";
           port = 9063;
+          flags = [ "IsolateDestAddr" "IsolateDestPort" ];
         }
       ];
-
       CookieAuthentication = true;
       SafeLogging = true;
       AvoidDiskWrites = true;
@@ -67,7 +66,6 @@
       ClientUseIPv6 = true;
     };
   };
-
   environment.systemPackages = with pkgs; [
     torsocks
   ];
