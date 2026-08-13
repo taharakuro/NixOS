@@ -62,6 +62,7 @@
       distrobox
       blockbench
       wireshark
+      inkscape
     ];
   };
   dconf = {
