@@ -63,6 +63,7 @@
       blockbench
       wireshark
       inkscape
+      libreoffice
     ];
   };
   dconf = {
