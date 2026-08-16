@@ -121,7 +121,6 @@ in
       # Например, "-b 0" отключает bias при снижении уровня.
       extraArgs = [ "-b" "0" ];
     };
-  };
 
     fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
     gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
