@@ -97,10 +97,10 @@ in
       }
       # Раскомментируйте и подставьте нужный путь после
       # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
-      # {
-      #   type = "hwmon";
-      #   query = "/sys/class/hwmon/hwmon3/temp1_input";
-      # }
+      {
+        type = "hwmon";
+        query = "/sys/class/hwmon/hwmon1/temp1_input";
+      }
     ];
 
     # Кривая скорости вентилятора: [LEVEL LOW HIGH]
