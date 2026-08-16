@@ -229,6 +229,7 @@ in
     fd
     ffmpeg
     lm_sensors
+    jdk8
 
     # ПРОВЕРИТЬ: возможно, теперь ставится автоматически модулем
     # programs.niri (опция xwayland-satellite, появилась в nixpkgs вместе с
