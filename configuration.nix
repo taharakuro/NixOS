@@ -81,89 +81,87 @@ in
 
   services.fwupd.enable = true;
 
-    services.thinkfan = {
-      enable = true;
+  services.thinkfan = {
+    enable = true;
 
-      # Собрать thinkfan с поддержкой чтения температуры дисков через S.M.A.R.T.
-      smartSupport = true;
+    # Собрать thinkfan с поддержкой чтения температуры дисков через S.M.A.R.T.
+    smartSupport = true;
 
-      # Источники температуры. По умолчанию thinkfan и так использует
-      # /proc/acpi/ibm/thermal — оставляем явно для читаемости и добавляем
-      # k10temp (AMD) как дополнительный сенсор, если он есть в hwmon.
-      sensors = [
-        {
-          type = "tpacpi";
-          query = "/proc/acpi/ibm/thermal";
-        }
-        # Раскомментируйте и подставьте нужный путь после
-        # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
-        # {
-        #   type = "hwmon";
-        #   query = "/sys/class/hwmon/hwmon3/temp1_input";
-        # }
-      ];
+    # Источники температуры. По умолчанию thinkfan и так использует
+    # /proc/acpi/ibm/thermal — оставляем явно для читаемости и добавляем
+    # k10temp (AMD) как дополнительный сенсор, если он есть в hwmon.
+    sensors = [
+      {
+        type = "tpacpi";
+        query = "/proc/acpi/ibm/thermal";
+      }
+      # Раскомментируйте и подставьте нужный путь после
+      # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
+      # {
+      #   type = "hwmon";
+      #   query = "/sys/class/hwmon/hwmon3/temp1_input";
+      # }
+    ];
 
-      # Кривая скорости вентилятора: [LEVEL LOW HIGH]
-      # LEVEL: 0-7 (thinkpad_acpi), "level auto", "level full-speed" или "level disengaged"
-      # LOW/HIGH — температуры (°C) переключения на предыдущий/следующий уровень
-      levels = [
-        [ 0 0 55 ]
-        [ 1 48 60 ]
-        [ 2 50 63 ]
-        [ 3 52 66 ]
-        [ 4 56 68 ]
-        [ 5 59 71 ]
-        [ 6 63 76 ]
-        [ 7 65 81 ]
-        [ "level auto" 78 32767 ]
-      ];
+    # Кривая скорости вентилятора: [LEVEL LOW HIGH]
+    # LEVEL: 0-7 (thinkpad_acpi), "level auto", "level full-speed" или "level disengaged"
+    # LOW/HIGH — температуры (°C) переключения на предыдущий/следующий уровень
+    levels = [
+      [ 0 0 55 ]
+      [ 1 48 60 ]
+      [ 2 50 63 ]
+      [ 3 52 66 ]
+      [ 4 56 68 ]
+      [ 5 59 71 ]
+      [ 6 63 76 ]
+      [ 7 65 81 ]
+      [ "level auto" 78 32767 ]
+    ];
 
-      # Например, "-b 0" отключает bias при снижении уровня.
-      extraArgs = [ "-b" "0" ];
-    };
+    # Например, "-b 0" отключает bias при снижении уровня.
+    extraArgs = [ "-b" "0" ];
   };
 
-    fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
-    gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
+  services.fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
+  services.gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
 
-    snapper.configs.root = {
-      SUBVOLUME = "/";
-      ALLOW_USERS = [ "tahara" ];
-      TIMELINE_CREATE = true;
-      TIMELINE_CLEANUP = true;
-      TIMELINE_LIMIT_HOURLY = 5;
-      TIMELINE_LIMIT_DAILY = 7;
-      TIMELINE_LIMIT_WEEKLY = 4;
-      TIMELINE_LIMIT_MONTHLY = 3;
-      TIMELINE_LIMIT_YEARLY = 0;
-    };
+  services.snapper.configs.root = {
+    SUBVOLUME = "/";
+    ALLOW_USERS = [ "tahara" ];
+    TIMELINE_CREATE = true;
+    TIMELINE_CLEANUP = true;
+    TIMELINE_LIMIT_HOURLY = 5;
+    TIMELINE_LIMIT_DAILY = 7;
+    TIMELINE_LIMIT_WEEKLY = 4;
+    TIMELINE_LIMIT_MONTHLY = 3;
+    TIMELINE_LIMIT_YEARLY = 0;
+  };
 
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      pulse.enable = true;
-      jack.enable = true;
-    };
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
 
-    power-profiles-daemon.enable = true;
-    upower.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.upower.enable = true;
 
-    displayManager.sddm = {
-      enable = true;
-      package = pkgs.kdePackages.sddm;
-      wayland.enable = true;
-      extraPackages = (with pkgs; [
-        kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
-      ]) ++ [
-        # ИСПРАВЛЕНО: раньше тема была только в environment.systemPackages.
-        # По официальному примеру NixOS Wiki (SDDM Themes) пакет темы нужен
-        # в обоих местах — extraPackages подключает его именно в окружение
-        # самого SDDM (до входа пользователя), иначе часть темы (шрифты,
-        # QML-компоненты) может не подхватываться.
-        sddm-astronaut
-      ];
-      theme = "sddm-astronaut-theme";
-    };
+  services.displayManager.sddm = {
+    enable = true;
+    package = pkgs.kdePackages.sddm;
+    wayland.enable = true;
+    extraPackages = (with pkgs; [
+      kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
+    ]) ++ [
+      # ИСПРАВЛЕНО: раньше тема была только в environment.systemPackages.
+      # По официальному примеру NixOS Wiki (SDDM Themes) пакет темы нужен
+      # в обоих местах — extraPackages подключает его именно в окружение
+      # самого SDDM (до входа пользователя), иначе часть темы (шрифты,
+      # QML-компоненты) может не подхватываться.
+      sddm-astronaut
+    ];
+    theme = "sddm-astronaut-theme";
   };
 
   environment.sessionVariables.XDG_DATA_DIRS = [
