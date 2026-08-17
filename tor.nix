@@ -44,10 +44,10 @@ services.tor = {
       UseBridges = true;
       ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
       Bridge = [
-        "obfs4 76.10.166.153:19002 3BF084A0D1EB65B218196ADC2A14E910098B5403 cert=lhFPEZopsp53BmDezbEq2Jy8HTwx4FDDclN26nSscfxoA+swKYLZo6E0nTLGepH6KcJzZA iat-mode=0"
-        "obfs4 185.177.207.209:11209 1C44EA586DD2CE384ED8774F23933953073BAC9D cert=wRjx4jjZySoTFboOyxL+n+BS4UVIfVX7gqEE3sEgrCfw5cvOBuBHGIJcWCwRQYSeN91TDw iat-mode=2"
-        "obfs4 51.89.231.85:24526 A44162645CEAA39C7106C49A3F36FD99FF8D8A00 cert=cVNRBh1enpvEGxA0ouu568EDFhWPl9taldydYgiJk77OX4MzoYIRz3qx4q7yHL5bRN60Gg iat-mode=0"
-        "obfs4 51.89.228.250:21668 BA8BD67D8898CF378D4F73821DEB5657F4BB98DF cert=bEpLLgOwJ9fOJbeHb5r+ronUF2ck5nRd0Jl3zuy7rLoUp732QK2p/CUHjTAfBPCGfcVtSA iat-mode=0"
+        "obfs4 185.188.30.72:8450 D9874D876EC1EDF17CF3A1D8D8BD12A8B48E7B30 cert=yQNz/Dehiu2scMuIVdgfJEwLbvvNqWgQ6EI39XO+Hh0lGZ7KpWN8a3UE7omRogl4jR6kCw iat-mode=0"
+        "obfs4 178.104.210.11:43103 90BACE93B4760594E5E5F7AA43698B5BA29BBBF0 cert=L46f5XBSKYNNI8FrWO+SHr6zKNL3ipPn8HCSazewvx11p0iTGwlhDHbgfC1x7GDyPSuFfg iat-mode=0"
+        "obfs4 15.235.49.224:30844 883533723CE6BCFC59DA6E57C0D735A9DF931732 cert=MhVkLg0fLmmxExvOjltzA/WDZ2m3+Cx5zh8rJnV8YWW6HW7wsv+6Q/rs8xUckXQ5IiNCIA iat-mode=0"
+        "obfs4 217.182.93.225:62782 D4FC51091A3D23F098354F660F2D5B17B2F3432C cert=UDjYbRlpv/GEc19L1dPssudaWQE83uxgUKxtUDQ7COumf1ERpup7+mcOvshJdO4Luh/Udw iat-mode=0"
       ];
       # выделенный SOCKS-порт под privoxy, не пересекается со стандартным
       # клиентским 9050 (services.tor.client.enable выше)
