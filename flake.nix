@@ -1,11 +1,20 @@
 {
   description = "NixOS configuration with Niri and Noctalia";
 
-  # Кэш niri.cachix.org сам включается модулем niri-flake для обычных
-  # nixos-rebuild, но НЕ успевает подействовать на самой первой сборке при
-  # nixos-install (система ещё не переключена, чтобы применить nix.settings).
-  # Этот блок читает сама команда `nix`, поэтому кэш работает и на установке —
-  # но nix спросит подтверждение (или нужен флаг --accept-flake-config).
+  # ИСПРАВЛЕНО: предыдущая версия этого комментария объясняла отсутствие
+  # niri.cachix.org тем, что его кэш "сам включается модулем niri-flake" —
+  # но niri-flake (sodiboo/niri-flake или аналог) в этом flake нигде не
+  # используется как input, niri берётся напрямую из nixpkgs (см.
+  # programs.niri.enable в configuration.nix и комментарий в home.nix про
+  # отсутствие HM-модуля для niri). Поэтому кэша niri.cachix.org здесь и не
+  # должно быть — он просто не нужен, бинарники niri уже собираются и лежат
+  # в обычном cache.nixos.org вместе с остальным nixpkgs.
+  #
+  # extra-substituters/extra-trusted-public-keys ниже (noctalia, prismlauncher)
+  # читает сама команда `nix`, поэтому кэш работает и на самой первой сборке
+  # при nixos-install (система ещё не переключена, и nix.settings из
+  # configuration.nix ещё не применились) — но nix спросит подтверждение
+  # (или нужен флаг --accept-flake-config).
   nixConfig = {
     extra-substituters = [
       "https://noctalia.cachix.org"
