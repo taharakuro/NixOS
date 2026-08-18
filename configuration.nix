@@ -123,6 +123,22 @@ in
     SUBSYSTEM=="hwmon", ATTR{name}=="k10temp", RUN+="${pkgs.coreutils}/bin/ln -sfn /sys$env{DEVPATH} /run/k10temp-hwmon"
   '';
 
+  # На "живом" `nixos-rebuild switch` (в отличие от холодной перезагрузки)
+  # устройство hwmon для k10temp уже существует, поэтому событие `add`,
+  # которое запускает правило выше, не происходит просто от перезапуска
+  # systemd-udevd — симлинк не создаётся, и thinkfan падает с "no such
+  # file", т.к. открывает несуществующий /run/k10temp-hwmon/temp1_input.
+  # Заставляем сам thinkfan.service переиграть udev-событие перед стартом —
+  # тогда работает одинаково и на switch, и на холодной загрузке.
+  systemd.services.thinkfan = {
+    wants = [ "systemd-udev-settle.service" ];
+    after = [ "systemd-udev-settle.service" ];
+    serviceConfig.ExecStartPre = [
+      "${pkgs.systemd}/bin/udevadm trigger --action=add --subsystem-match=hwmon"
+      "${pkgs.systemd}/bin/udevadm settle"
+    ];
+  };
+
   services.thinkfan = {
     enable = true;
 
