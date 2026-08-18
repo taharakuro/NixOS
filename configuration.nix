@@ -33,10 +33,28 @@ in
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    kernelParams = [ "amd_pstate=active" ];
+
+    # Свежее ядро важно именно для T14s Gen3 AMD (Rembrandt/Ryzen 6000,
+    # RDNA2 iGPU, MediaTek MT7921 Wi-Fi, звук через cs35l41/SOF) — вся эта
+    # связка активно донастраивалась в апстриме уже после релиза железа,
+    # и часть фиксов попадала только в свежие ядра, которых нет в
+    # стабильной ветке nixpkgs 26.05.
+    kernelPackages = pkgs.linuxPackages_latest;
+
+    kernelParams = [
+      "amd_pstate=active"
+      # ThinkPad'ы на Ryzen 6000 используют только s2idle (Modern Standby),
+      # S3 недоступен. Хорошо задокументированная проблема этого
+      # поколения — паразитные пробуждения NVMe-диска во время сна,
+      # съедающие заряд за ночь (десятки % вместо <1%). noacpi отключает
+      # ACPI-путь инициализации NVMe и решает это на большинстве моделей.
+      # Если после установки диск не определяется — уберите эту строку.
+      "nvme.noacpi=1"
+    ];
     tmp.cleanOnBoot = true;
-    extraModprobeConfig = "options thinkpad_acpi fan_control=1";
-    # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    # ИСПРАВЛЕНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    # строка реально удалена (в предыдущей правке остался только
+    # поясняющий комментарий, а сама строка ошибочно не была убрана).
     # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
     # включён (nixos/modules/services/hardware/thinkfan.nix):
     #   boot.extraModprobeConfig =
@@ -74,6 +92,18 @@ in
     bluetooth.enable = true;
   };
 
+  # Wi-Fi-карта T14s Gen3 AMD — MediaTek MT7921 (mt7921e). Известная болячка
+  # этого чипа — редкие обрывы соединения/зависания при активном ASPM.
+  # Не включаю принудительно (ASPM экономит энергию, и не у всех
+  # экземпляров проблема проявляется) — если ловите обрывы Wi-Fi, добавьте:
+  #   boot.extraModprobeConfig = "options mt7921e disable_aspm=1";
+
+  # Если в этой конкретной ревизии T14s стоит сканер отпечатков (опция при
+  # заказе, не на всех конфигурациях) — он определяется как libfprint-
+  # совместимый Synaptics/Goodix сенсор. Включается отдельно:
+  #   services.fprintd.enable = true;
+  # затем `fprintd-enroll`; в SDDM/PAM входит через отдельный модуль pam.
+
   # ИСПРАВЛЕНО: services.xserver.videoDrivers = [ "amdgpu" ]; убрано.
   # Эта опция подключается только через services.xserver.enable, которого
   # нигде нет (чистый Wayland/niri, X-сервер не запускается) — без него она
@@ -81,6 +111,17 @@ in
   # hardware.enableRedistributableFirmware уже тянет нужные прошивки.
 
   services.fwupd.enable = true;
+
+  # Стабильный путь до датчика k10temp (AMD CPU). Индекс hwmonN у
+  # ThinkPad'ов на Ryzen нередко "плавает" между загрузками/обновлениями
+  # ядра (зависит от порядка регистрации drivers), поэтому жёстко зашитый
+  # /sys/class/hwmon/hwmon6/... — источник тихой поломки thinkfan: сервис
+  # не упадёт, но перестанет видеть температуру CPU и будет держать
+  # вентилятор на минимуме. Правило ниже держит актуальную симлинку
+  # /run/k10temp-hwmon → нужный /sys/class/hwmon/hwmonN независимо от индекса.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="hwmon", ATTR{name}=="k10temp", RUN+="${pkgs.coreutils}/bin/ln -sfn /sys$env{DEVPATH} /run/k10temp-hwmon"
+  '';
 
   services.thinkfan = {
     enable = true;
@@ -90,13 +131,11 @@ in
 
     # Источники температуры. По умолчанию thinkfan и так использует
     # /proc/acpi/ibm/thermal — оставляем явно для читаемости и добавляем
-    # k10temp (AMD) как дополнительный сенсор, если он есть в hwmon.
+    # k10temp (AMD) как дополнительный сенсор через устойчивый symlink выше.
     sensors = [
-      # Раскомментируйте и подставьте нужный путь после
-      # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
       {
         type = "hwmon";
-        query = "/sys/class/hwmon/hwmon6/temp1_input";
+        query = "/run/k10temp-hwmon/temp1_input";
       }
     ];
     fans = [
