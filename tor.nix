@@ -1,7 +1,3 @@
-# Модуль сам не объявляет собственных `options`, поэтому обёртка
-# `config = { ... };` не нужна (это плоский NixOS-модуль) — ИСПРАВЛЕНО:
-# убрана, для единообразия с configuration.nix. Заодно убраны неиспользуемые
-# аргументы config/lib — реально нужен только pkgs.
 { pkgs, ... }:
 {
   services.privoxy = {
@@ -11,22 +7,6 @@
       "listen-address" = "127.0.0.1:8118";
       "forward" = "/ .";
 
-      # ИСПРАВЛЕНО: .cache.nixos.org и .releases.nixos.org убраны отсюда.
-      #
-      # networking.proxy.default (configuration.nix) указывает на этот
-      # privoxy — а он обслуживает не только браузер/приложения, но и
-      # nix-daemon (NixOS прокидывает http_proxy/https_proxy системному
-      # прокси в systemd-юниты). Это значит, что ЛЮБАЯ загрузка пакетов из
-      # бинарного кэша NixOS (nixos-rebuild, home-manager switch) шла через
-      # Tor-мосты (obfs4) вместе с Discord — а мосты обычно дают от
-      # десятков КБ/с до нескольких Мбит/с, то есть обновление системы
-      # могло растягиваться на часы вместо минут.
-      #
-      # Если у вас реально ограничен прямой доступ к cache.nixos.org /
-      # releases.nixos.org (а не только к Discord) — верните две строки
-      # ниже в список forward-socks5t:
-      #   ".cache.nixos.org 127.0.0.1:9063 ."
-      #   ".releases.nixos.org 127.0.0.1:9063 ."
       "forward-socks5t" = [
         ".cache.nixos.org 127.0.0.1:9063 ."
         ".releases.nixos.org 127.0.0.1:9063 ."
