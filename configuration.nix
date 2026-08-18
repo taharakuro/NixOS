@@ -92,8 +92,8 @@ in
     # k10temp (AMD) как дополнительный сенсор, если он есть в hwmon.
     sensors = [
       {
-        type = "tpacpi";
-        query = "/proc/acpi/ibm/thermal";
+        type = "tp_fan";
+        query = "/proc/acpi/ibm/fan";
       }
       # Раскомментируйте и подставьте нужный путь после
       # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
