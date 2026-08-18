@@ -373,6 +373,7 @@ in
     ffmpeg
     lm_sensors
     jdk8
+    xwayland-satellite
 
     # ИСПРАВЛЕНО (было "ПРОВЕРИТЬ"): подтверждено — опция
     # programs.niri.xwayland-satellite добавлена в nixpkgs в
