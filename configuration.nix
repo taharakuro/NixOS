@@ -96,7 +96,7 @@ in
       # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
       {
         type = "hwmon";
-        query = "/sys/class/hwmon";
+        query = "/sys/class/hwmon/hwmon6/temp1_input";
       }
     ];
     fans = [
