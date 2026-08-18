@@ -64,6 +64,11 @@ in
     bluetooth.enable = true;
   };
 
+  services.tftpd = {
+    enable = true;
+    path = "/srv/tftp"; # Change to your preferred folder
+  }
+
   services.fwupd.enable = true;
 
   services.fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
