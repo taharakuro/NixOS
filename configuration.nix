@@ -67,7 +67,7 @@ in
   services.tftpd = {
     enable = true;
     path = "/srv/tftp"; # Change to your preferred folder
-  }
+  };
 
   services.fwupd.enable = true;
 
