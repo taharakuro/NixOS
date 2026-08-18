@@ -35,6 +35,7 @@ in
     loader.efi.canTouchEfiVariables = true;
     kernelParams = [ "amd_pstate=active" ];
     tmp.cleanOnBoot = true;
+    extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     # УБРАНО: extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     # Модуль services.thinkfan сам добавляет эту опцию модпробу, когда
     # включён (nixos/modules/services/hardware/thinkfan.nix):
@@ -91,10 +92,6 @@ in
     # /proc/acpi/ibm/thermal — оставляем явно для читаемости и добавляем
     # k10temp (AMD) как дополнительный сенсор, если он есть в hwmon.
     sensors = [
-      {
-        type = "tp_fan";
-        query = "/proc/acpi/ibm/fan";
-      }
       # Раскомментируйте и подставьте нужный путь после
       # `ls /sys/class/hwmon/*/name` -> найдите тот, что выводит "k10temp":
       {
@@ -102,7 +99,12 @@ in
         query = "/sys/class/hwmon/hwmon1/temp1_input";
       }
     ];
-
+    fans = [
+      {
+        type = "tpacpi";
+        query = "/proc/acpi/ibm/fan";
+      }
+    ];
     # Кривая скорости вентилятора: [LEVEL LOW HIGH]
     # LEVEL: 0-7 (thinkpad_acpi), "level auto", "level full-speed" или "level disengaged"
     # LOW/HIGH — температуры (°C) переключения на предыдущий/следующий уровень
