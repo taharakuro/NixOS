@@ -119,9 +119,11 @@ in
     ];
   };
 
-  # Сканер отпечатков работает из коробки через fprint (ArchWiki: Lenovo ThinkPad
-  # T14/T14s (Intel/AMD) Gen 3 — "Fingerprint reader works out of the box").
-  services.fprintd.enable = true;
+  services.atftpd = {
+    enable = true;
+    root = "/srv/tftp"; # Change to your preferred folder
+    extraOptions = [ "--bind-address" "192.168.0.66" ];
+  };
 
   # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >=5.17,
   # /sys/class/power_supply/BAT0/charge_control_{start,end}_threshold) — без
