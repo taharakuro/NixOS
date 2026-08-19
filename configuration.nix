@@ -66,7 +66,7 @@ in
 
   services.atftpd = {
     enable = true;
-    root = "/srv/tftp"; # Change to your preferred folder
+    root = "/srv/tftp/tp_recovery.bin"; # Change to your preferred folder
     extraOptions = [ "--bind-address" "192.168.0.66" ];
   };
 
