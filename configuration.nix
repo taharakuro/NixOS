@@ -157,7 +157,6 @@ in
 
   environment.systemPackages = (with pkgs; [
     vim
-    tftp
     git
     wget
     curl
