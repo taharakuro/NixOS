@@ -64,9 +64,10 @@ in
     bluetooth.enable = true;
   };
 
-  services.tftpd = {
+  services.atftpd = {
     enable = true;
-    path = "/srv/tftp"; # Change to your preferred folder
+    root = "/srv/tftp"; # Change to your preferred folder
+    extraOptions = [ "--bind-address" "192.168.0.66" ];
   };
 
   services.fwupd.enable = true;
