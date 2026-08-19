@@ -119,11 +119,17 @@ in
     ];
   };
 
-  services.atftpd = {
+  services.dnsmasq = {
     enable = true;
-    root = "/srv/tftp"; # Change to your preferred folder
-    extraOptions = [ "--bind-address" "192.168.0.66" ];
+    settings = {
+      enable-tftp = true;
+      tftp-root = "/srv/tftp";
+      dhcp-range = "192.168.0.1,192.168.0.66";
+    };
   };
+
+  networking.firewall.allowedUDPPorts = [ 69 67 ];
+
 
   # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >=5.17,
   # /sys/class/power_supply/BAT0/charge_control_{start,end}_threshold) — без
