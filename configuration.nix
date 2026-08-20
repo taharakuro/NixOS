@@ -38,7 +38,7 @@ in
     kernelParams = [
       # активный EPP-драйвер SMU для Ryzen 6xxx "Rembrandt" (нужно ядро >=6.3, у нас
       # linuxPackages_latest — ок). https://docs.kernel.org/admin-guide/pm/amd-pstate.html
-      "amd_pstate=active"
+      "amd_pstate=guided"
       # На этом поколении AMD-платформ рабочего S3 нет (EC/прошивка его не тянут).
       # ArchWiki (Lenovo ThinkPad T14 (AMD) Gen 3#Firmware) прямо предупреждает не
       # переключать suspend mode в UEFI на "Linux (S3)" — машина зависает при
