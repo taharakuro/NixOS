@@ -46,6 +46,9 @@ in
       "mem_sleep_default=s2idle"
     ];
 
+    extraModprobeConfig = ''
+      options thinkpad_acpi fan_control=1
+    '';
     # k10temp — hwmon-датчик температуры ядра Ryzen. По PCI ID обычно подгружается
     # сам, но явная загрузка нужна, чтобы thinkfan ниже гарантированно видел
     # /sys/class/hwmon/*/name == "k10temp" уже на момент своего старта.
