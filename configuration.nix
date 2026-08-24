@@ -79,6 +79,25 @@ in
   services.fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
   services.gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
 
+  services.thinkfan = {
+    enable = true;
+    sensors = [
+      { type = "tpacpi"; query = "/proc/acpi/ibm/thermal"; }
+      { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; } # Tctl
+    ];
+    fans = [
+      { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
+    ];
+    # [уровень, LOW, HIGH]: LOW — температура сброса на уровень ниже, HIGH — подъёма
+    # на уровень выше. Достаточный зазор LOW/HIGH внутри уровня и так между
+    # соседними уровнями — то, чего не хватает штатной прошивке (отсюда и дёрганья).
+    # Подстройте под себя после недели наблюдений (watch -n1 sensors).
+    levels = [
+      [ 0 0  60 ]
+      [ 7 60 32767 ]
+    ];
+  };
+
   services.snapper.configs.root = {
     SUBVOLUME = "/";
     ALLOW_USERS = [ "tahara" ];
