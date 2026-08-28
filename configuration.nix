@@ -34,6 +34,10 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_latest;
+    extraModprobeConfig = ''
+      options thinkpad_acpi fan_control=1
+    '';
+    kernelModules = [ "k10temp" ];
     tmp.cleanOnBoot = true;
   };
 
@@ -82,7 +86,6 @@ in
   services.thinkfan = {
     enable = true;
     sensors = [
-      { type = "tpacpi"; query = "/proc/acpi/ibm/thermal"; }
       { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; } # Tctl
     ];
     fans = [
