@@ -1,18 +1,5 @@
 { pkgs, ... }:
 {
-  services.privoxy = {
-    enable = true;
-
-    settings = {
-      "listen-address" = "127.0.0.1:8118";
-      "forward" = "/ .";
-
-      "forward-socks5t" = [
-        ".cache.nixos.org 127.0.0.1:9063 ."
-        ".releases.nixos.org 127.0.0.1:9063 ."
-      ];
-    };
-  };
 
 services.tor = {
     enable = true;
