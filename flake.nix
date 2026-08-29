@@ -25,12 +25,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hytale-launcher = {
+      url = "github:JPyke3/hytale-launcher-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
 
-  outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, hytale-launcher, prismlauncher, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
