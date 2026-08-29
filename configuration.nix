@@ -45,23 +45,6 @@ in
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.enable = true;
-    hosts = {
-      "193.233.112.68" = [
-        "api.spotify.com"
-        "login5.spotify.com"
-        "encore.scdn.co"
-        "gew1-spclient.spotify.com"
-        "spclient.wg.spotify.com"
-        "api-partner.spotify.com"
-        "aet.spotify.com"
-        "www.spotify.com"
-        "accounts.spotify.com"
-        "open.spotify.com"
-        "accounts.scdn.co"
-        "gew1-dealer.spotify.com"
-        "www-growth.scdn.co"
-      ];
-    };
     proxy = {
       default = "http://127.0.0.1:8118";
       noProxy = "127.0.0.1,localhost";
