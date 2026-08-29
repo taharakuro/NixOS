@@ -35,7 +35,7 @@
     prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
 
-  outputs = { nixpkgs, home-manager, disko, hytale-launcher, prismlauncher, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, hytale-launcher, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
