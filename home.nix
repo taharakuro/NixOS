@@ -45,6 +45,7 @@
       wireshark
       inkscape
       libreoffice
+      inputs.hytale-launcher.packages.${pkgs.system}.default
     ];
   };
   dconf = {
