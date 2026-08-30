@@ -33,7 +33,7 @@ in
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_zen;
     extraModprobeConfig = ''
       options thinkpad_acpi fan_control=1
     '';
