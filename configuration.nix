@@ -34,9 +34,6 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
-    extraModprobeConfig = ''
-      options thinkpad_acpi fan_control=1
-    '';
     kernelModules = [ "k10temp" ];
     tmp.cleanOnBoot = true;
   };
