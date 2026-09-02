@@ -90,7 +90,7 @@ in
     # Подстройте под себя после недели наблюдений (watch -n1 sensors).
     levels = [
       [ 0 0 45 ]
-      ["level auto" 50 75]
+      ["level auto" 45 80]
       ["level disengaged" 80 255]
     ];
   };
