@@ -34,18 +34,15 @@
       mpvpaper
       eog
       gedit
-      obsidian
       fragments
       xdelta
-      jdk21
       wineWow64Packages.waylandFull
       winetricks
       distrobox
-      blockbench
       wireshark
-      inkscape
       libreoffice
       inputs.hytale-launcher.packages.${pkgs.system}.default
+      vintagestory
     ];
   };
   dconf = {
