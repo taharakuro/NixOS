@@ -188,11 +188,9 @@ in
     fd
     ffmpeg
     lm_sensors
-    jdk8
     xwayland-satellite
 
   ]) ++ [
     sddm-astronaut
-    inputs.prismlauncher.packages.${pkgs.system}.prismlauncher
   ];
 }
