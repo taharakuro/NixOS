@@ -36,6 +36,9 @@ in
     kernelPackages = pkgs.linuxPackages_zen;
     kernelModules = [ "k10temp" ];
     tmp.cleanOnBoot = true;
+    kernel.sysctl = {
+      "net.ipv4.tcp_timestamps" = 1;
+    };
   };
 
   networking = {
