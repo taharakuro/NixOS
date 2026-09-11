@@ -192,7 +192,7 @@ in
     ffmpeg
     lm_sensors
     xwayland-satellite
-    linuxKernel.packages.linux_zen.amneziawg
+    amneziawg-tools
 
   ]) ++ [
     sddm-astronaut
