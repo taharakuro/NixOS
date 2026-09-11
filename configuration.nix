@@ -148,6 +148,7 @@ in
     obs-studio.enable = true;
     gamemode.enable = true;
     wireshark.enable = true;
+    amnezia-vpn.enable = true;
   };
 
   xdg.portal = {
@@ -192,7 +193,6 @@ in
     ffmpeg
     lm_sensors
     xwayland-satellite
-    amneziawg-tools
 
   ]) ++ [
     sddm-astronaut
