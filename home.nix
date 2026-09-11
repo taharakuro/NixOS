@@ -44,6 +44,7 @@
       inputs.hytale-launcher.packages.${pkgs.system}.default
       vintagestory
       inputs.prismlauncher.packages.${pkgs.system}.prismlauncher
+      amnezia-vpn
     ];
   };
   dconf = {
