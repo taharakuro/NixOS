@@ -30,9 +30,6 @@ in
         version = "20260810";
         src = prev.fetchzip {
           url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
-          # первая сборка провалится с ошибкой хэша — Nix подскажет правильный,
-          # подставьте его сюда вместо пустой строки
-          hash = "ac17c34fe73756926a961fbafadf8d8f07a3bd2dd2f4ea31a0fb5d50c714a49a";
         };
       });
     })
