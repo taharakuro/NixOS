@@ -198,6 +198,7 @@ in
 
   environment.systemPackages = (with pkgs; [
     vim
+    udisks
     git
     wget
     curl
