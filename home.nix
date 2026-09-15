@@ -43,7 +43,7 @@
       libreoffice
       inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
-      inputs.prismlauncher.packages.${pkgs.stdenv.hostPlatform.system}.prismlauncher
+      prismlauncher
     ];
   };
   dconf = {
