@@ -29,7 +29,7 @@ in
       linux-firmware = prev.linux-firmware.overrideAttrs (old: rec {
         version = "20260810";
         src = prev.fetchzip {
-          url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
+          url = "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
           # первая сборка провалится с ошибкой хэша — Nix подскажет правильный,
           # подставьте его сюда вместо пустой строки
           hash = "";
