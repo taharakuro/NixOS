@@ -41,9 +41,9 @@
       distrobox
       wireshark
       libreoffice
-      inputs.hytale-launcher.packages.${pkgs.system}.default
+      inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
-      inputs.prismlauncher.packages.${pkgs.system}.prismlauncher
+      inputs.prismlauncher.packages.${pkgs.stdenv.hostPlatform.system}.prismlauncher
     ];
   };
   dconf = {
@@ -142,11 +142,8 @@
         command = "niri msg action power-off-monitors";
       }
     ];
-    events = [
-      {
-        event = "before-sleep";
-        command = "swaylock -f";
-      }
-    ];
+    events = {
+      before-sleep = "swaylock -f";
+    };
   };
 }
