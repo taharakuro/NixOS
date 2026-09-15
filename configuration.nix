@@ -198,7 +198,6 @@ in
 
   environment.systemPackages = (with pkgs; [
     vim
-    ventoy
     git
     wget
     curl
