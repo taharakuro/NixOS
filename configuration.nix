@@ -27,9 +27,8 @@ in
   nixpkgs.overlays = [
     (final: prev: {
       linux-firmware = prev.linux-firmware.overrideAttrs (old: rec {
-        version = "20260810";
         src = prev.fetchzip {
-          url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
+          url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260810.tar.gz";
         };
       });
     })
