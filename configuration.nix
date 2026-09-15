@@ -199,7 +199,6 @@ in
   environment.systemPackages = (with pkgs; [
     vim
     git
-    mediawriter
     wget
     curl
     fastfetch
