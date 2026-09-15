@@ -4,11 +4,9 @@
   nixConfig = {
     extra-substituters = [
       "https://noctalia.cachix.org"
-      "https://prismlauncher.cachix.org"
     ];
     extra-trusted-public-keys = [
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
     ];
   };
 
@@ -32,7 +30,6 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
-    prismlauncher.url = "github:PrismLauncher/PrismLauncher";
   };
 
   outputs = { nixpkgs, home-manager, disko, hytale-launcher, ... }@inputs: {
