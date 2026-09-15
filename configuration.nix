@@ -223,6 +223,7 @@ in
     vim
     udisks
     gnome-disk-utility
+    xdg-user-dirs-gtk
     git
     wget
     curl
