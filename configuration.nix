@@ -32,7 +32,7 @@ in
           url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
           # первая сборка провалится с ошибкой хэша — Nix подскажет правильный,
           # подставьте его сюда вместо пустой строки
-          hash = "";
+          hash = "sha256-P/fPpqaatp8Z2GV+I/OChiWGn6AhV+8w1RMFuX/LqHc=";
         };
       });
     })
