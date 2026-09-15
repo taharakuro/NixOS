@@ -41,6 +41,18 @@ in
     };
   };
 
+  # zram как быстрый первый уровень подкачки; 12G-раздел в disko.nix остаётся
+  # вторым уровнем и нужен в первую очередь для гибернации (resumeDevice).
+  # priority выше, чем у дискового swap (по умолчанию у него -2 в fstab),
+  # поэтому ядро всегда выбирает zram первым и уходит на диск, только когда
+  # сжатого RAM-свопа не хватает.
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+    priority = 100;
+  };
+
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
@@ -60,76 +72,77 @@ in
     bluetooth.enable = true;
   };
 
-  services.fwupd.enable = true;
-  # Работает, только если в BIOS включено "Enable Windows Update UEFI Update"
-  # (Security -> ...). Также известна проблема: прошивка версии 0.1.40 у T14s Gen 3
-  # (AMD) вызывает сбои — если ловите странности после обновления BIOS, ArchWiki
-  # (Lenovo ThinkPad T14s (AMD) Gen 3) прямо предупреждает про эту версию.
+  services = {
+    fwupd.enable = true;
+    # Работает, только если в BIOS включено "Enable Windows Update UEFI Update"
+    # (Security -> ...). Также известна проблема: прошивка версии 0.1.40 у T14s Gen 3
+    # (AMD) вызывает сбои — если ловите странности после обновления BIOS, ArchWiki
+    # (Lenovo ThinkPad T14s (AMD) Gen 3) прямо предупреждает про эту версию.
 
-  # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >=5.17,
-  # /sys/class/power_supply/BAT0/charge_control_{start,end}_threshold) — без
-  # tp_smapi/acpi_call, которые для этой модели не нужны и местами не работают.
-  # 75/80 — консервативный ориентир для продления жизни батареи, если ноутбук
-  # часто работает от сети; подправьте под свой сценарий использования.
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{charge_control_start_threshold}="75", ATTR{charge_control_end_threshold}="80"
-  '';
-  # ================================================================================
+    # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >=5.17,
+    # /sys/class/power_supply/BAT0/charge_control_{start,end}_threshold) — без
+    # tp_smapi/acpi_call, которые для этой модели не нужны и местами не работают.
+    # 75/80 — консервативный ориентир для продления жизни батареи, если ноутбук
+    # часто работает от сети; подправьте под свой сценарий использования.
+    udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{charge_control_start_threshold}="75", ATTR{charge_control_end_threshold}="80"
+    '';
 
-  services.fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
-  services.gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
+    fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
+    gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
 
-  services.thinkfan = {
-    enable = true;
-    sensors = [
-      { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; } # Tctl
-    ];
-    fans = [
-      { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
-    ];
-    # [уровень, LOW, HIGH]: LOW — температура сброса на уровень ниже, HIGH — подъёма
-    # на уровень выше. Достаточный зазор LOW/HIGH внутри уровня и так между
-    # соседними уровнями — то, чего не хватает штатной прошивке (отсюда и дёрганья).
-    # Подстройте под себя после недели наблюдений (watch -n1 sensors).
-    levels = [
-      [ 0 0 45 ]
-      ["level auto" 45 80]
-      ["level disengaged" 80 255]
-    ];
-  };
+    thinkfan = {
+      enable = true;
+      sensors = [
+        { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; } # Tctl
+      ];
+      fans = [
+        { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
+      ];
+      # [уровень, LOW, HIGH]: LOW — температура сброса на уровень ниже, HIGH — подъёма
+      # на уровень выше. Достаточный зазор LOW/HIGH внутри уровня и так между
+      # соседними уровнями — то, чего не хватает штатной прошивке (отсюда и дёрганья).
+      # Подстройте под себя после недели наблюдений (watch -n1 sensors).
+      levels = [
+        [ 0 0 45 ]
+        [ "level auto" 45 80 ]
+        [ "level disengaged" 80 255 ]
+      ];
+    };
 
-  services.snapper.configs.root = {
-    SUBVOLUME = "/";
-    ALLOW_USERS = [ "tahara" ];
-    TIMELINE_CREATE = true;
-    TIMELINE_CLEANUP = true;
-    TIMELINE_LIMIT_HOURLY = 5;
-    TIMELINE_LIMIT_DAILY = 7;
-    TIMELINE_LIMIT_WEEKLY = 4;
-    TIMELINE_LIMIT_MONTHLY = 3;
-    TIMELINE_LIMIT_YEARLY = 0;
-  };
+    snapper.configs.root = {
+      SUBVOLUME = "/";
+      ALLOW_USERS = [ "tahara" ];
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_LIMIT_HOURLY = 5;
+      TIMELINE_LIMIT_DAILY = 7;
+      TIMELINE_LIMIT_WEEKLY = 4;
+      TIMELINE_LIMIT_MONTHLY = 3;
+      TIMELINE_LIMIT_YEARLY = 0;
+    };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      pulse.enable = true;
+      jack.enable = true;
+    };
 
-  services.power-profiles-daemon.enable = true; # для AMD ноутбуков лучше держать батарею, чем tlp — не включайте оба сразу
-  services.upower.enable = true;
+    power-profiles-daemon.enable = true; # для AMD ноутбуков лучше держать батарею, чем tlp — не включайте оба сразу
+    upower.enable = true;
 
-  services.displayManager.sddm = {
-    enable = true;
-    package = pkgs.kdePackages.sddm;
-    wayland.enable = true;
-    extraPackages = (with pkgs; [
-      kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
-    ]) ++ [
-      sddm-astronaut
-    ];
-    theme = "sddm-astronaut-theme";
+    displayManager.sddm = {
+      enable = true;
+      package = pkgs.kdePackages.sddm;
+      wayland.enable = true;
+      extraPackages = (with pkgs; [
+        kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
+      ]) ++ [
+        sddm-astronaut
+      ];
+      theme = "sddm-astronaut-theme";
+    };
   };
 
   environment.sessionVariables.XDG_DATA_DIRS = [
@@ -137,8 +150,10 @@ in
     "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
   ];
 
-  security.rtkit.enable = true;
-  security.polkit.enable = true;
+  security = {
+    rtkit.enable = true;
+    polkit.enable = true;
+  };
 
   programs = {
     dconf.enable = true;
@@ -167,8 +182,6 @@ in
     vmware.host.enable = true;
   };
 
-  zramSwap.enable = true;
-
   fonts = {
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
@@ -193,7 +206,6 @@ in
     ffmpeg
     lm_sensors
     xwayland-satellite
-
   ]) ++ [
     sddm-astronaut
   ];
