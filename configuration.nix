@@ -40,6 +40,7 @@ in
 
   nix = {
     settings = {
+      trusted-users = [ "root" "tahara" ];
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
       connect-timeout = 5;
