@@ -199,6 +199,7 @@ in
   environment.systemPackages = (with pkgs; [
     vim
     udisks
+    gnome-disk-utility
     git
     wget
     curl
