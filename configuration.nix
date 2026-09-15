@@ -16,6 +16,28 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+  # ВРЕМЕННЫЙ откат linux-firmware: сборка 20260910 содержит регресс в
+  # прошивке DMCUB (Rembrandt/Phoenix iGPU), из-за которого dmesg заливает
+  # бесконечными "*ERROR* dc_dmub_srv_log_diagnostic_data: DMCUB error -
+  # collecting diagnostic data" (см. gitlab.freedesktop.org/drm/amd/-/issues/3913
+  # и аналогичный репорт на форуме Arch про 20260910-1 на Radeon 680M).
+  # Откатываемся на 20260810 — последнюю известную рабочую сборку.
+  # TODO: убрать этот overlay, когда апстрим выкатит фикс в свежей linux-firmware
+  # (проверять: nix path-info -r /run/current-system | grep -i linux-firmware).
+  nixpkgs.overlays = [
+    (final: prev: {
+      linux-firmware = prev.linux-firmware.overrideAttrs (old: rec {
+        version = "20260810";
+        src = prev.fetchzip {
+          url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
+          # первая сборка провалится с ошибкой хэша — Nix подскажет правильный,
+          # подставьте его сюда вместо пустой строки
+          hash = "";
+        };
+      });
+    })
+  ];
+
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
@@ -39,16 +61,6 @@ in
     kernel.sysctl = {
       "net.ipv4.tcp_timestamps" = 1;
     };
-    # Временный воркэраунд регресса в linux-firmware-20260910: DMCUB-прошивка
-    # для Rembrandt (amdgpu 73:00.0) шлёт бесконечный спам
-    # "DMCUB error - collecting diagnostic data" в dmesg (см. отчёт на Arch
-    # Forums про 680M с той же версией прошивки, а также апстрим-регрессы
-    # freedesktop issue 3913 / коммит f1c6be3999d2). 0x10 отключает DMCUB —
-    # теряется PSR (panel self-refresh), но на этом железе PSR и так не
-    # поддерживался (см. лог: "PSR support 0"), так что реальной потери
-    # функциональности нет. Убрать этот параметр, как только апстрим
-    # выпустит исправленную прошивку.
-    kernelParams = [ "amdgpu.dcdebugmask=0x10" ];
   };
 
   # zram как быстрый первый уровень подкачки; 12G-раздел в disko.nix остаётся
