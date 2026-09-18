@@ -16,6 +16,28 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+  # ВРЕМЕННЫЙ откат linux-firmware: сборка 20260910 содержит регресс в
+  # прошивке DMCUB (Rembrandt/Phoenix iGPU), из-за которого dmesg заливает
+  # бесконечными "*ERROR* dc_dmub_srv_log_diagnostic_data: DMCUB error -
+  # collecting diagnostic data" (см. gitlab.freedesktop.org/drm/amd/-/issues/3913
+  # и аналогичный репорт на форуме Arch про 20260910-1 на Radeon 680M).
+  # Откатываемся на 20260810 — последнюю известную рабочую сборку.
+  # TODO: убрать этот overlay, когда апстрим выкатит фикс в свежей linux-firmware
+  # (проверять: nix path-info -r /run/current-system | grep -i linux-firmware).
+  nixpkgs.overlays = [
+    (final: prev: {
+      linux-firmware = prev.linux-firmware.overrideAttrs (old: rec {
+        version = "20260810";
+        src = prev.fetchzip {
+          url = "https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-${version}.tar.xz";
+          # первая сборка провалится с ошибкой хэша — Nix подскажет правильный,
+          # подставьте его сюда вместо пустой строки
+          hash = "sha256-P/fPpqaatp8Z2GV+I/OChiWGn6AhV+8w1RMFuX/LqHc=";
+        };
+      });
+    })
+  ];
+
   nix = {
     settings = {
       trusted-users = [ "root" "tahara" ];
