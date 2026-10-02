@@ -36,6 +36,7 @@ in
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
     kernelModules = [ "k10temp" ];
+    extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     tmp.cleanOnBoot = true;
     kernel.sysctl = {
       "net.ipv4.tcp_timestamps" = 1;
@@ -104,14 +105,17 @@ in
       fans = [
         { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
       ];
-      # [уровень, LOW, HIGH]: LOW — температура сброса на уровень ниже, HIGH — подъёма
-      # на уровень выше. Достаточный зазор LOW/HIGH внутри уровня и так между
-      # соседними уровнями — то, чего не хватает штатной прошивке (отсюда и дёрганья).
-      # Подстройте под себя после недели наблюдений (watch -n1 sensors).
       levels = [
-        [ 0 0 45 ]
-        [ "level auto" 45 80 ]
-        [ "level disengaged" 80 255 ]
+        # [уровень  LOW  HIGH]: вниз при T < LOW, вверх при T > HIGH
+        # у каждого уровня LOW меньше HIGH предыдущего → зазор 5 °C, дёрганий нет
+        [ 1 0  50 ]
+        [ 2 45 55 ]
+        [ 3 50 60 ]
+        [ 4 55 65 ]
+        [ 5 60 70 ]
+        [ 6 65 75 ]
+        [ 7 70 82 ]
+        [ "level disengaged" 78 255 ]
       ];
     };
 
