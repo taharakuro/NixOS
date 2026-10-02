@@ -32,14 +32,16 @@
       spotify
       vlc
       mpvpaper
-      eog
-      gedit
+      loupe
+      papers
+      file-roller
+      mangohud
+      gnome-text-editor
       fragments
       xdelta
       wineWow64Packages.waylandFull
       winetricks
       distrobox
-      wireshark
       libreoffice
       inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
@@ -90,12 +92,12 @@
 
       "inode/directory" = "org.gnome.Nautilus.desktop";
 
-      "image/png" = "org.gnome.eog.desktop";
-      "image/jpeg" = "org.gnome.eog.desktop";
-      "image/gif" = "org.gnome.eog.desktop";
-      "image/webp" = "org.gnome.eog.desktop";
-      "image/bmp" = "org.gnome.eog.desktop";
-      "image/svg+xml" = "org.gnome.eog.desktop";
+      "image/png" = "org.gnome.Loupe.desktop";
+      "image/jpeg" = "org.gnome.Loupe.desktop";
+      "image/gif" = "org.gnome.Loupe.desktop";
+      "image/webp" = "org.gnome.Loupe.desktop";
+      "image/bmp" = "org.gnome.Loupe.desktop";
+      "image/svg+xml" = "org.gnome.Loupe.desktop";
 
       "video/mp4" = "vlc.desktop";
       "video/x-matroska" = "vlc.desktop";
@@ -103,7 +105,14 @@
       "audio/mpeg" = "vlc.desktop";
       "audio/flac" = "vlc.desktop";
 
-      "text/plain" = "org.gnome.gedit.desktop";
+      "text/plain" = "org.gnome.TextEditor.desktop";
+
+      "application/pdf" = "org.gnome.Papers.desktop";
+
+      "application/zip" = "org.gnome.FileRoller.desktop";
+      "application/x-tar" = "org.gnome.FileRoller.desktop";
+      "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
+      "application/vnd.rar" = "org.gnome.FileRoller.desktop";
 
     };
   };
@@ -135,15 +144,15 @@
     timeouts = [
       {
         timeout = 300;
-        command = "swaylock -f";
+        command = "${pkgs.swaylock}/bin/swaylock -f";
       }
       {
         timeout = 600;
-        command = "niri msg action power-off-monitors";
+        command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
       }
     ];
     events = {
-      before-sleep = "swaylock -f";
+      before-sleep = "${pkgs.swaylock}/bin/swaylock -f";
     };
   };
 }

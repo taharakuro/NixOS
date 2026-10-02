@@ -35,15 +35,11 @@ in
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
-    kernelModules = [ "k10temp" ];
     extraModprobeConfig = "options thinkpad_acpi fan_control=1";
     tmp.cleanOnBoot = true;
-    kernel.sysctl = {
-      "net.ipv4.tcp_timestamps" = 1;
-    };
   };
 
-  # zram как быстрый первый уровень подкачки; 12G-раздел в disko.nix остаётся
+  # zram как быстрый первый уровень подкачки; 14G-раздел в disko.nix остаётся
   # вторым уровнем и нужен в первую очередь для гибернации (resumeDevice).
   # priority выше, чем у дискового swap (по умолчанию у него -2 в fstab),
   # поэтому ядро всегда выбирает zram первым и уходит на диск, только когда
@@ -94,7 +90,9 @@ in
       ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{charge_control_start_threshold}="75", ATTR{charge_control_end_threshold}="80"
     '';
 
+    btrfs.autoScrub.enable = true; # раздел root — btrfs
     fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
+    udisks2.enable = true; # монтирование дисков из nautilus/gnome-disks
     gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
 
     thinkfan = {
@@ -162,22 +160,39 @@ in
   security = {
     rtkit.enable = true;
     polkit.enable = true;
+    pam.services = {
+      # swaylock ставится из home.nix, а PAM-сервис для него нужен на уровне
+      # системы — иначе пароль не примется и экран не разблокируется.
+      swaylock = { };
+      # разблокировка gnome-keyring (его включает programs.niri) при входе через SDDM
+      sddm.enableGnomeKeyring = true;
+    };
   };
 
   programs = {
     dconf.enable = true;
     niri.enable = true;
     fish.enable = true;
-    steam.enable = true;
+    steam = {
+      enable = true;
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
+    };
+    gamescope.enable = true;
     obs-studio.enable = true;
     gamemode.enable = true;
-    wireshark.enable = true;
+    wireshark = {
+      enable = true;
+      # по умолчанию wireshark-cli; GUI из home.nix убран, чтобы не дублировать
+      package = pkgs.wireshark;
+    };
     amnezia-vpn.enable = true;
+    nix-ld.enable = true; # запуск сторонних (не-Nix) бинарников
+    gnome-disks.enable = true; # gnome-disk-utility
   };
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # portal-gnome уже добавляет programs.niri
   };
 
   users.users.tahara = {
@@ -195,6 +210,8 @@ in
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-color-emoji
       font-awesome
       fira-code
     ];
@@ -203,15 +220,12 @@ in
 
   environment.systemPackages = (with pkgs; [
     vim
-    udisks
-    gnome-disk-utility
     xdg-user-dirs
     xdg-user-dirs-gtk
     git
     wget
     curl
     fastfetch
-    htop
     btop
     tree
     ripgrep
