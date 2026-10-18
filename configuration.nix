@@ -20,9 +20,11 @@ in
     settings = {
       trusted-users = [ "root" "tahara" ];
       experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
       connect-timeout = 5;
     };
+
+    # отдельный таймер вместо auto-optimise-store: дедупликация не тормозит сборки
+    optimise.automatic = true;
 
     gc = {
       automatic = true;
@@ -33,6 +35,8 @@ in
 
   boot = {
     loader.systemd-boot.enable = true;
+    # ESP всего 512M, а каждое поколение с zen-ядром кладёт туда ядро + initrd
+    loader.systemd-boot.configurationLimit = 10;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
     extraModprobeConfig = "options thinkpad_acpi fan_control=1";

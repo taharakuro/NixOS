@@ -32,7 +32,7 @@
 
   };
 
-  outputs = { nixpkgs, home-manager, disko, hytale-launcher, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, disko, ... }@inputs: {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {

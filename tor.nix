@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
-
-services.tor = {
+  services.tor = {
     enable = true;
     client = {
       enable = true;
@@ -16,8 +15,8 @@ services.tor = {
         "obfs4 91.134.45.152:60506 7AE2E2B622A5C1EAAB63C203B7C58788F502F4D0 cert=+r7Hj14Ox6vxKCQu5hkGPHp7f0NxAqE3hgysGruyC4yuMaU/9MJuNBXZy0znzk3q6O2cYw iat-mode=0"
         "obfs4 164.132.87.180:18197 C439802F7FEE4DEADD0A9BCF54A9ACA492B211FD cert=s9ZoBNAv9NOxX41LGvqZwU1qPrhpfEytQTdlcWO5Jo3e5sBZ8+FKkghy9LAHkn5D8GCDEw iat-mode=0"
       ];
-      # выделенный SOCKS-порт под privoxy, не пересекается со стандартным
-      # клиентским 9050 (services.tor.client.enable выше)
+      # выделенный SOCKS-порт, не пересекается со стандартным клиентским 9050
+      # (services.tor.client.enable выше)
       SOCKSPort = [
         {
           addr = "127.0.0.1";
@@ -33,7 +32,6 @@ services.tor = {
       ClientUseIPv6 = true;
     };
   };
-  environment.systemPackages = with pkgs; [
-    torsocks
-  ];
+
+  environment.systemPackages = [ pkgs.torsocks ];
 }

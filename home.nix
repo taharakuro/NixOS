@@ -58,21 +58,19 @@
   };
   qt = {
     enable = true;
-    platformTheme.name = "qtct"; # or "gnome" or "qtct"
-    style = {
-      name = "adwaita-dark"; # Choose "Adwaita-Dark" or "Breeze-Dark"
-      package = pkgs.adwaita-qt;
-    };
+    platformTheme.name = "qtct";
+    # package не задаём: для adwaita-dark Home Manager сам ставит и adwaita-qt (Qt5),
+    # и adwaita-qt6 — с одним pkgs.adwaita-qt Qt6-приложения остаются без стиля
+    style.name = "adwaita-dark";
   };
   gtk = {
     theme = {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
-    # Force dark application preference in GTK3 & GTK4
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     enable = true;
+    # выставляет тёмный режим для GTK3 и GTK4 (для GTK4 — через gtk-interface-color-scheme)
+    colorScheme = "dark";
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
