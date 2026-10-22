@@ -46,6 +46,7 @@
       inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
       prismlauncher
+      olympus
     ];
   };
   dconf = {
