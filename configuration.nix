@@ -1,11 +1,5 @@
 { pkgs, ... }:
 
-let
-  sddm-astronaut = pkgs.sddm-astronaut.override {
-    embeddedTheme = "hyprland_kath";
-  };
-in
-
 {
   # hardware-configuration.nix подключается безусловно: если файл потерялся
   # или не добавлен в git, сборка упадёт сразу и явно. Раньше pathExists
@@ -170,14 +164,12 @@ in
     power-profiles-daemon.enable = true; # для AMD-ноутбуков лучше tlp; не включайте оба сразу
     upower.enable = true;
 
-    displayManager.sddm = {
+    displayManager.noctalia-greeter = {
       enable = true;
-      wayland.enable = true;
-      extraPackages = [
-        pkgs.kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
-        sddm-astronaut
-      ];
-      theme = "sddm-astronaut-theme";
+      settings = {
+        cursor.size = 24;
+        keyboard.layout = "us";
+      };
     };
   };
 
