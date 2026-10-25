@@ -168,7 +168,7 @@
       enable = true;
       settings.cursor = {
         theme = "Bibata-Modern-Ice";
-        size = 24;
+        size = 12;
         path = pkgs.bibata-cursors;
       };
     };
