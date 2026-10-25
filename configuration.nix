@@ -166,9 +166,9 @@
 
     displayManager.noctalia-greeter = {
       enable = true;
-      settings = {
-        cursor.size = 24;
-        keyboard.layout = "us";
+      settings.cursor = {
+        theme = "Bibata-Modern-Ice";
+        size = 24;
       };
     };
   };
