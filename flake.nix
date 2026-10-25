@@ -57,6 +57,7 @@
         modules = [
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
+          inputs.noctalia-greeter.nixosModules.default
           ./disko.nix
           ./configuration.nix
           {
