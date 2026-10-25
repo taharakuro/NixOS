@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 let
   sddm-astronaut = pkgs.sddm-astronaut.override {
@@ -7,10 +7,13 @@ let
 in
 
 {
-  imports = [ ./tor.nix ]
-    # решает проблему курицы и яйца: при nixos-install с disko этого файла
-    # физически ещё нет в репозитории на первом шаге
-    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
+  # hardware-configuration.nix подключается безусловно: если файл потерялся
+  # или не добавлен в git, сборка упадёт сразу и явно. Раньше pathExists
+  # молча пропускал его, и система собиралась без nvme/kvm-amd в initrd.
+  imports = [
+    ./hardware-configuration.nix
+    ./tor.nix
+  ];
 
   system.stateVersion = "26.05";
 
@@ -18,9 +21,22 @@ in
 
   nix = {
     settings = {
-      trusted-users = [ "root" "tahara" ];
-      experimental-features = [ "nix-command" "flakes" ];
+      trusted-users = [
+        "root"
+        "tahara"
+      ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       connect-timeout = 5;
+      warn-dirty = false;
+
+      # то же, что nixConfig во flake.nix, но постоянно и без вопросов при сборке
+      extra-substituters = [ "https://noctalia.cachix.org" ];
+      extra-trusted-public-keys = [
+        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+      ];
     };
 
     # отдельный таймер вместо auto-optimise-store: дедупликация не тормозит сборки
@@ -34,24 +50,23 @@ in
   };
 
   boot = {
-    loader.systemd-boot.enable = true;
-    # ESP всего 512M, а каждое поколение с zen-ядром кладёт туда ядро + initrd
-    loader.systemd-boot.configurationLimit = 10;
+    loader.systemd-boot = {
+      enable = true;
+      # ESP всего 512M, а каждое поколение с zen-ядром кладёт туда ядро + initrd
+      configurationLimit = 10;
+      # без LUKS правка cmdline в меню загрузки (init=/bin/sh) даёт root за секунды
+      editor = false;
+    };
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
-    extraModprobeConfig = "options thinkpad_acpi fan_control=1";
+    extraModprobeConfig = "options thinkpad_acpi fan_control=1"; # нужно для thinkfan
     tmp.cleanOnBoot = true;
   };
 
-  # zram как быстрый первый уровень подкачки; 14G-раздел в disko.nix остаётся
-  # вторым уровнем и нужен в первую очередь для гибернации (resumeDevice).
-  # priority выше, чем у дискового swap (по умолчанию у него -2 в fstab),
-  # поэтому ядро всегда выбирает zram первым и уходит на диск, только когда
-  # сжатого RAM-свопа не хватает.
-  # memoryPercent = 100% от 14G ОЗУ — не значит "займёт всю память": в zram
-  # реально расходуется место только под уже сжатые страницы (обычно ~2-3x
-  # сжатие на zstd), а при 14G и одновременных Docker/VMware/играх свободный
-  # запас на случай пиков важнее, чем экономия этих процентов.
+  # zram — быстрый первый уровень подкачки. 14G-раздел из disko.nix остаётся
+  # вторым уровнем и нужен прежде всего для гибернации (resumeDevice).
+  # priority = 100 выше, чем у дискового swap, поэтому ядро сначала заполняет
+  # zram. 100% ОЗУ — это лишь лимит: реально занимается только сжатый объём.
   zramSwap = {
     enable = true;
     algorithm = "zstd";
@@ -62,7 +77,6 @@ in
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
-    firewall.enable = true;
   };
 
   time.timeZone = "Europe/Moscow";
@@ -79,38 +93,51 @@ in
   };
 
   services = {
+    # Обновления прошивок работают, только если в BIOS включено
+    # "Enable Windows Update UEFI Update" (раздел Security). Известная проблема:
+    # прошивка 0.1.40 у T14s Gen 3 (AMD) вызывает сбои — ArchWiki предупреждает
+    # об этом прямо; если после обновления BIOS пошли странности, смотрите туда.
     fwupd.enable = true;
-    # Работает, только если в BIOS включено "Enable Windows Update UEFI Update"
-    # (Security -> ...). Также известна проблема: прошивка версии 0.1.40 у T14s Gen 3
-    # (AMD) вызывает сбои — если ловите странности после обновления BIOS, ArchWiki
-    # (Lenovo ThinkPad T14s (AMD) Gen 3) прямо предупреждает про эту версию.
 
-    # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >=5.17,
+    # Пороги заряда батареи через нативный интерфейс thinkpad_acpi (ядро >= 5.17,
     # /sys/class/power_supply/BAT0/charge_control_{start,end}_threshold) — без
-    # tp_smapi/acpi_call, которые для этой модели не нужны и местами не работают.
-    # 75/80 — консервативный ориентир для продления жизни батареи, если ноутбук
-    # часто работает от сети; подправьте под свой сценарий использования.
+    # tp_smapi/acpi_call. 75/80 — консервативный ориентир, если ноутбук часто
+    # работает от сети; подправьте под свой сценарий.
     udev.extraRules = ''
       ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{charge_control_start_threshold}="75", ATTR{charge_control_end_threshold}="80"
     '';
 
-    btrfs.autoScrub.enable = true; # раздел root — btrfs
-    fstrim.enable = true; # вместе с discard=async из disko.nix — рекомендуемая связка, не дублирование
+    btrfs.autoScrub = {
+      enable = true;
+      # без этого скрабится каждая точка монтирования отдельно: /, /home, /nix
+      # и /.snapshots — это одна и та же ФС, т.е. четыре скраба подряд
+      fileSystems = [ "/" ];
+    };
+    fstrim.enable = true; # заодно чистит vfat-ESP, до которой discard=async не дотягивается
     udisks2.enable = true; # монтирование дисков из nautilus/gnome-disks
     gvfs.enable = true; # нужен nautilus'у (home.nix) для корзины/MTP/сетевых шар
 
     thinkfan = {
       enable = true;
       sensors = [
-        { type = "hwmon"; query = "/sys/class/hwmon"; name = "k10temp"; indices = [ 1 ]; } # Tctl
+        {
+          type = "hwmon";
+          query = "/sys/class/hwmon";
+          name = "k10temp";
+          indices = [ 1 ]; # Tctl
+        }
       ];
       fans = [
-        { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
+        {
+          type = "tpacpi";
+          query = "/proc/acpi/ibm/fan";
+        }
       ];
       levels = [
-        # [уровень  LOW  HIGH]: вниз при T < LOW, вверх при T > HIGH
-        # у каждого уровня LOW меньше HIGH предыдущего → зазор 5 °C, дёрганий нет
-        [ 1 0  50 ]
+        # [уровень LOW HIGH]: вниз при T < LOW, вверх при T > HIGH.
+        # LOW каждого уровня меньше HIGH предыдущего → зазор 5 °C, дёрганий нет.
+        # Минимальный уровень 1: вентилятор не останавливается совсем.
+        [ 1 0 50 ]
         [ 2 45 55 ]
         [ 3 50 60 ]
         [ 4 55 65 ]
@@ -140,22 +167,22 @@ in
       jack.enable = true;
     };
 
-    power-profiles-daemon.enable = true; # для AMD ноутбуков лучше держать батарею, чем tlp — не включайте оба сразу
+    power-profiles-daemon.enable = true; # для AMD-ноутбуков лучше tlp; не включайте оба сразу
     upower.enable = true;
 
     displayManager.sddm = {
       enable = true;
-      package = pkgs.kdePackages.sddm;
       wayland.enable = true;
-      extraPackages = (with pkgs; [
-        kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
-      ]) ++ [
+      extraPackages = [
+        pkgs.kdePackages.qtmultimedia # нужен для видео-фонов/звука в теме
         sddm-astronaut
       ];
       theme = "sddm-astronaut-theme";
     };
   };
 
+  # TODO: проверить, нужен ли ещё этот костыль — убрать, пересобрать и посмотреть,
+  # не пропали ли настройки GTK/dconf в приложениях без обёртки.
   environment.sessionVariables.XDG_DATA_DIRS = [
     "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
     "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
@@ -186,7 +213,7 @@ in
     gamemode.enable = true;
     wireshark = {
       enable = true;
-      # по умолчанию wireshark-cli; GUI из home.nix убран, чтобы не дублировать
+      # по умолчанию wireshark-cli; нужен полный пакет с GUI
       package = pkgs.wireshark;
     };
     amnezia-vpn.enable = true;
@@ -201,43 +228,48 @@ in
 
   users.users.tahara = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "wireshark" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "video"
+      "audio"
+      "docker" # = root без пароля; см. rootless docker как более безопасную альтернативу
+      "wireshark"
+    ];
     shell = pkgs.fish;
   };
 
   virtualisation = {
-    docker.enable = true;
+    docker = {
+      enable = true;
+      autoPrune = {
+        enable = true;
+        dates = "weekly";
+      };
+    };
     vmware.host.enable = true;
   };
 
-  fonts = {
-    packages = with pkgs; [
-      nerd-fonts.jetbrains-mono
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-color-emoji
-      font-awesome
-      fira-code
-    ];
-    fontconfig.enable = true;
-  };
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji
+    font-awesome
+    fira-code
+  ];
 
-  environment.systemPackages = (with pkgs; [
+  # Только то, что нужно системе и root. Пользовательские утилиты — в home.nix.
+  environment.systemPackages = [
+    sddm-astronaut # тема должна лежать в /run/current-system/sw/share/sddm/themes
+  ] ++ (with pkgs; [
     vim
-    xdg-user-dirs
-    xdg-user-dirs-gtk
     git
     wget
     curl
-    fastfetch
-    btop
-    tree
-    ripgrep
-    fd
-    ffmpeg
     lm_sensors
+    xdg-user-dirs
+    xdg-user-dirs-gtk
     xwayland-satellite
-  ]) ++ [
-    sddm-astronaut
-  ];
+  ]);
 }

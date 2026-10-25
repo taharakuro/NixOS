@@ -1,10 +1,22 @@
-{ pkgs, inputs, ... }:
-
 {
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
+
+let
+  # "приложение -> список MIME-типов" вместо повторения приложения в каждой строке
+  mime = app: types: lib.genAttrs types (_: app);
+in
+{
+  imports = [ inputs.noctalia.homeModules.default ];
+
   home = {
     username = "tahara";
     homeDirectory = "/home/tahara";
     stateVersion = "26.05";
+
     pointerCursor = {
       gtk.enable = true;
       x11.enable = true;
@@ -12,12 +24,23 @@
       name = "Bibata-Modern-Ice";
       size = 24;
     };
+
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
-      MOZ_ENABLE_WAYLAND = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
+      # MOZ_ENABLE_WAYLAND убран: Firefox сам использует Wayland начиная с 121
     };
+
     packages = with pkgs; [
+      # CLI (раньше лежали в systemPackages)
+      fastfetch
+      btop
+      tree
+      ripgrep
+      fd
+      ffmpeg
+
+      # окружение рабочего стола
       wl-clipboard
       grim
       slurp
@@ -27,6 +50,8 @@
       fuzzel
       mako
       swaylock
+
+      # приложения
       telegram-desktop
       discord
       spotify
@@ -35,28 +60,25 @@
       loupe
       papers
       file-roller
-      mangohud
       gnome-text-editor
       fragments
+      libreoffice
+
+      # игры и Wine
+      mangohud
       xdelta
       wineWow64Packages.waylandFull
       winetricks
       distrobox
-      libreoffice
       inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
       prismlauncher
       olympus
     ];
   };
-  dconf = {
-    enable = true;
-    settings = {
-      "org/gnome/desktop/interface" = {
-        color-scheme = "prefer-dark";
-      };
-    };
-  };
+
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
   qt = {
     enable = true;
     platformTheme.name = "qtct";
@@ -64,13 +86,14 @@
     # и adwaita-qt6 — с одним pkgs.adwaita-qt Qt6-приложения остаются без стиля
     style.name = "adwaita-dark";
   };
+
   gtk = {
+    enable = true;
     theme = {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
-    enable = true;
-    # выставляет тёмный режим для GTK3 и GTK4 (для GTK4 — через gtk-interface-color-scheme)
+    # тёмный режим для GTK3 и GTK4 (для GTK4 — через gtk-interface-color-scheme)
     colorScheme = "dark";
     iconTheme = {
       name = "Papirus-Dark";
@@ -78,50 +101,46 @@
     };
   };
 
-  imports = [ inputs.noctalia.homeModules.default ];
-
   xdg.mimeApps = {
     enable = true;
-    defaultApplications = {
-      "text/html" = "firefox.desktop";
-      "x-scheme-handler/http" = "firefox.desktop";
-      "x-scheme-handler/https" = "firefox.desktop";
-      "x-scheme-handler/about" = "firefox.desktop";
-      "x-scheme-handler/unknown" = "firefox.desktop";
-
-      "inode/directory" = "org.gnome.Nautilus.desktop";
-
-      "image/png" = "org.gnome.Loupe.desktop";
-      "image/jpeg" = "org.gnome.Loupe.desktop";
-      "image/gif" = "org.gnome.Loupe.desktop";
-      "image/webp" = "org.gnome.Loupe.desktop";
-      "image/bmp" = "org.gnome.Loupe.desktop";
-      "image/svg+xml" = "org.gnome.Loupe.desktop";
-
-      "video/mp4" = "vlc.desktop";
-      "video/x-matroska" = "vlc.desktop";
-      "video/webm" = "vlc.desktop";
-      "audio/mpeg" = "vlc.desktop";
-      "audio/flac" = "vlc.desktop";
-
-      "text/plain" = "org.gnome.TextEditor.desktop";
-
-      "application/pdf" = "org.gnome.Papers.desktop";
-
-      "application/zip" = "org.gnome.FileRoller.desktop";
-      "application/x-tar" = "org.gnome.FileRoller.desktop";
-      "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
-      "application/vnd.rar" = "org.gnome.FileRoller.desktop";
-
-    };
+    defaultApplications =
+      mime "firefox.desktop" [
+        "text/html"
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/about"
+        "x-scheme-handler/unknown"
+      ]
+      // mime "org.gnome.Nautilus.desktop" [ "inode/directory" ]
+      // mime "org.gnome.Loupe.desktop" [
+        "image/png"
+        "image/jpeg"
+        "image/gif"
+        "image/webp"
+        "image/bmp"
+        "image/svg+xml"
+      ]
+      // mime "vlc.desktop" [
+        "video/mp4"
+        "video/x-matroska"
+        "video/webm"
+        "audio/mpeg"
+        "audio/flac"
+      ]
+      // mime "org.gnome.TextEditor.desktop" [ "text/plain" ]
+      // mime "org.gnome.Papers.desktop" [ "application/pdf" ]
+      // mime "org.gnome.FileRoller.desktop" [
+        "application/zip"
+        "application/x-tar"
+        "application/x-7z-compressed"
+        "application/vnd.rar"
+      ];
   };
 
   programs = {
-    home-manager.enable = true;
-
-    noctalia = {
-      enable = true;
-    };
+    # programs.home-manager.enable убран: при установке через NixOS-модуль
+    # отдельная утилита home-manager не нужна, сборкой занимается nixos-rebuild.
+    noctalia.enable = true;
 
     kitty = {
       enable = true;
