@@ -252,9 +252,7 @@
   ];
 
   # Только то, что нужно системе и root. Пользовательские утилиты — в home.nix.
-  environment.systemPackages = [
-    sddm-astronaut # тема должна лежать в /run/current-system/sw/share/sddm/themes
-  ] ++ (with pkgs; [
+  environment.systemPackages = with pkgs; [
     vim
     git
     wget
@@ -263,5 +261,5 @@
     xdg-user-dirs
     xdg-user-dirs-gtk
     xwayland-satellite
-  ]);
+  ];
 }
