@@ -184,13 +184,6 @@
   security = {
     rtkit.enable = true;
     polkit.enable = true;
-    pam.services = {
-      # swaylock ставится из home.nix, а PAM-сервис для него нужен на уровне
-      # системы — иначе пароль не примется и экран не разблокируется.
-      swaylock = { };
-      # разблокировка gnome-keyring (его включает programs.niri) при входе через SDDM
-      sddm.enableGnomeKeyring = true;
-    };
   };
 
   programs = {
