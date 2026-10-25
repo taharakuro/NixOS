@@ -49,7 +49,6 @@ in
       networkmanagerapplet
       fuzzel
       mako
-      swaylock
 
       # приложения
       telegram-desktop
