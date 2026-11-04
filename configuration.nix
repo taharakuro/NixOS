@@ -44,6 +44,9 @@
   };
 
   boot = {
+    kernel.sysctl = {
+      "net.ipv4.tcp_timestamps" = 1;
+    };
     loader.systemd-boot = {
       enable = true;
       # ESP всего 512M, а каждое поколение с zen-ядром кладёт туда ядро + initrd
