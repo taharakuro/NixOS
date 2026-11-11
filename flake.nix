@@ -29,11 +29,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    bedrock-on-linux = {
-      url = "github:Wyze3306/BedrockOnLinux";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Ветка cachix собирается под бинарный кэш Noctalia. Не добавляйте сюда
     # inputs.nixpkgs.follows: со своим nixpkgs хэши разойдутся и кэш перестанет попадать.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
@@ -49,7 +44,6 @@
       nixpkgs,
       home-manager,
       disko,
-      bedrock-on-linux,
       ...
     }@inputs:
     {

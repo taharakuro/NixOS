@@ -73,7 +73,6 @@ in
       vintagestory
       prismlauncher
       olympus
-      inputs.bedrock-on-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };
 
