@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "bedrock-on-linux": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794742073,
+        "narHash": "sha256-P2VhErHenM5PbhA8fioHg5gRqdfQQJ5zh209YQNUxD8=",
+        "owner": "Wyze3306",
+        "repo": "BedrockOnLinux",
+        "rev": "8ed2e52b03e47b5bed531e3b418102c282efcefd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Wyze3306",
+        "repo": "BedrockOnLinux",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -27,16 +47,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1795325060,
-        "narHash": "sha256-XYoMPsqRFZ6jOaYI1KAAu8fzqif4tkCX8mhEKrViDXQ=",
+        "lastModified": 1795366757,
+        "narHash": "sha256-Tp4Kh4R7ID1f2mMCDlb2PiFQ/DZZsnXB2u2juWN+TT4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6480d7d8533b88c78cc6dcda395ab89cd546e450",
+        "rev": "3b8140d21fa0a70b1b38c2ed29853dfe686234a6",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "release-26.05",
         "repo": "home-manager",
         "type": "github"
       }
@@ -63,22 +82,23 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1795370043,
-        "narHash": "sha256-s/0jq8usZtLVOolYBwmyUmd3JsfAu7w3FU+a0dgMqSY=",
+        "lastModified": 1795234589,
+        "narHash": "sha256-f/VVvxf5RsQgWVhUtefoca5ktVg0DA2bnkMOcmSnozo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0dc498bfe49baeb18b0f9891e800b53bb2603193",
+        "rev": "2786a2a72088ecf32aea5b3ec52099e6a7cff78f",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-26.05",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "bedrock-on-linux": "bedrock-on-linux",
         "disko": "disko",
         "home-manager": "home-manager",
         "hytale-launcher": "hytale-launcher",
