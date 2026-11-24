@@ -138,6 +138,7 @@ in
   };
 
   programs = {
+    noctalia.enable = true;
     kitty = {
       enable = true;
       settings = {
