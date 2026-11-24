@@ -10,7 +10,6 @@ let
   mime = app: types: lib.genAttrs types (_: app);
 in
 {
-  imports = [ inputs.noctalia.homeModules.default ];
 
   home = {
     username = "tahara";
@@ -49,6 +48,7 @@ in
       networkmanagerapplet
       fuzzel
       mako
+      noctalia
 
       # приложения
       telegram-desktop
@@ -137,10 +137,6 @@ in
   };
 
   programs = {
-    # programs.home-manager.enable убран: при установке через NixOS-модуль
-    # отдельная утилита home-manager не нужна, сборкой занимается nixos-rebuild.
-    noctalia.enable = true;
-
     kitty = {
       enable = true;
       settings = {

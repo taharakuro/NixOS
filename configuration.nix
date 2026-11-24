@@ -25,12 +25,6 @@
       ];
       connect-timeout = 5;
       warn-dirty = false;
-
-      # то же, что nixConfig во flake.nix, но постоянно и без вопросов при сборке
-      extra-substituters = [ "https://noctalia.cachix.org" ];
-      extra-trusted-public-keys = [
-        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-      ];
     };
 
     # отдельный таймер вместо auto-optimise-store: дедупликация не тормозит сборки
@@ -74,9 +68,6 @@
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
-    networkmanager.plugins = with pkgs; [
-      networkmanager-openvpn
-    ];
   };
 
   time.timeZone = "Europe/Moscow";
@@ -261,5 +252,6 @@
     xdg-user-dirs
     xdg-user-dirs-gtk
     xwayland-satellite
+    noctalia-greeter
   ];
 }

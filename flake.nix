@@ -29,14 +29,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Ветка cachix собирается под бинарный кэш Noctalia. Не добавляйте сюда
-    # inputs.nixpkgs.follows: со своим nixpkgs хэши разойдутся и кэш перестанет попадать.
-    noctalia.url = "github:noctalia-dev/noctalia/cachix";
-
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -57,7 +49,6 @@
         modules = [
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
-          inputs.noctalia-greeter.nixosModules.default
           ./disko.nix
           ./configuration.nix
           {
