@@ -66,6 +66,7 @@
     networkmanager.enable = true;
     networkmanager.plugins = with pkgs; [
       networkmanager-openvpn
+      networkmanager-l2tp
     ];
   };
 
