@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "bedrock-on-linux": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1794742073,
-        "narHash": "sha256-P2VhErHenM5PbhA8fioHg5gRqdfQQJ5zh209YQNUxD8=",
-        "owner": "Wyze3306",
-        "repo": "BedrockOnLinux",
-        "rev": "8ed2e52b03e47b5bed531e3b418102c282efcefd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Wyze3306",
-        "repo": "BedrockOnLinux",
-        "type": "github"
-      }
-    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -115,11 +95,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1795472103,
-        "narHash": "sha256-Xws5YZ/9XhQUvNMCfht2f6iGibnb2OoKzhsGEyoETWs=",
+        "lastModified": 1795492716,
+        "narHash": "sha256-+vTZs5YbbZfn7uiMzZ6lQONCO6jeBpA7AB1upRWIqao=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "455d753c5f9bf4d067bd346ebf41e4d46738042d",
+        "rev": "b912cad300073bc9bc49a5f9747a69896aa5101a",
         "type": "github"
       },
       "original": {
@@ -151,7 +131,6 @@
     },
     "root": {
       "inputs": {
-        "bedrock-on-linux": "bedrock-on-linux",
         "disko": "disko",
         "home-manager": "home-manager",
         "hytale-launcher": "hytale-launcher",

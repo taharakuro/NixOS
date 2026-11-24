@@ -70,7 +70,6 @@ in
       winetricks
       distrobox
       inputs.hytale-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.bedrock-on-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
       vintagestory
       prismlauncher
       olympus
