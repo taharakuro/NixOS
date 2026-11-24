@@ -38,9 +38,6 @@
   };
 
   boot = {
-    kernel.sysctl = {
-      "net.ipv4.tcp_timestamps" = 1;
-    };
     loader.systemd-boot = {
       enable = true;
       # ESP всего 512M, а каждое поколение с zen-ядром кладёт туда ядро + initrd
@@ -50,7 +47,6 @@
     };
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
-    extraModprobeConfig = "options thinkpad_acpi fan_control=1"; # нужно для thinkfan
     tmp.cleanOnBoot = true;
   };
 
@@ -158,16 +154,18 @@
       jack.enable = true;
     };
 
-    power-profiles-daemon.enable = true; # для AMD-ноутбуков лучше tlp; не включайте оба сразу
+    power-profiles-daemon.enable = true; # с amd-pstate это штатный вариант; не включайте вместе с tlp
     upower.enable = true;
 
     displayManager.noctalia-greeter = {
       enable = true;
-      settings.cursor = {
-        theme = "Bibata-Modern-Ice";
-        size = 12;
-        path = pkgs.bibata-cursors;
+      # модуль сам выставляет settings.cursor.{theme,path}; path должен вести в
+      # <пакет>/share/icons, а не в корень пакета, как было раньше
+      cursorTheme = {
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Ice";
       };
+      settings.cursor.size = 12;
     };
   };
 

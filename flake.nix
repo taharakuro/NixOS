@@ -38,8 +38,7 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
 
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
+        # system не нужен: платформу задаёт nixpkgs.hostPlatform в hardware-configuration.nix
         specialArgs = { inherit inputs; };
 
         modules = [
