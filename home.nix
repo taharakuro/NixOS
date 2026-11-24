@@ -17,6 +17,7 @@ in
     stateVersion = "26.05";
 
     pointerCursor = {
+      enable = true;
       gtk.enable = true;
       x11.enable = true;
       package = pkgs.bibata-cursors;

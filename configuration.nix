@@ -151,7 +151,7 @@
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
-      jack.enable = true;
+      # jack.enable убран (deprecated): для JACK-приложений используйте pw-jack
     };
 
     power-profiles-daemon.enable = true; # с amd-pstate это штатный вариант; не включайте вместе с tlp
@@ -228,7 +228,10 @@
         dates = "weekly";
       };
     };
-    vmware.host.enable = true;
+    # ВРЕМЕННО выключено: сборка aggregated-modules падает на vmmon.ko.cer /
+    # vmnet.ko.cer (у внешних модулей VMware нет .cer, а nixpkgs ждёт его для
+    # каждой записи modules.order). Вернуть, когда починят в nixpkgs.
+    # vmware.host.enable = true;
   };
 
   fonts.packages = with pkgs; [
