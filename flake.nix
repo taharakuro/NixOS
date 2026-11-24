@@ -1,21 +1,11 @@
 {
   description = "NixOS configuration with Niri and Noctalia";
 
-  # Нужен для самой первой сборки: пока nix.settings из configuration.nix ещё
-  # не попал в систему, кэш Noctalia берётся отсюда. После этого тот же кэш
-  # прописан в системе постоянно (см. nix.settings в configuration.nix).
-  nixConfig = {
-    extra-substituters = [ "https://noctalia.cachix.org" ];
-    extra-trusted-public-keys = [
-      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-    ];
-  };
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -29,10 +19,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bedrock-on-linux = {
+      url = "github:Wyze3306/BedrockOnLinux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
     {
+      self,
       nixpkgs,
       home-manager,
       disko,
