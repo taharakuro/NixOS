@@ -252,6 +252,5 @@
     xdg-user-dirs
     xdg-user-dirs-gtk
     xwayland-satellite
-    noctalia-greeter
   ];
 }
